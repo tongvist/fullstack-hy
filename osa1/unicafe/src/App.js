@@ -1,18 +1,30 @@
 import React, {useState} from "react";
 
-const StatisticsLine = ({name, value, unit}) => <p>{name}: {value}{unit}</p>
+const StatisticsLine = ({name, value, unit, accuracy}) => {
+  return (
+  <>
+    <tr>
+      <td>{name}</td>
+      <td>{value.toFixed(accuracy)}</td>
+      <td>{unit}</td>
+    </tr>
+  </>
+  );
+}
 
 const Statistics = ({stats}) => {
   const {good, neutral, bad, all, average, positive} = stats;
   return all > 0 ? (
-    <div>
-      <StatisticsLine name="Good" value={good} />
-      <StatisticsLine name="Neutral" value={neutral} />
-      <StatisticsLine name="Bad" value={bad} />
-      <StatisticsLine name="All" value={all} />
-      <StatisticsLine name="Average" value={average} />
-      <StatisticsLine name="Positive" value={positive} unit="%"/>
-    </div>
+    <table>
+      <tbody>
+        <StatisticsLine name="Good" value={good} />
+        <StatisticsLine name="Neutral" value={neutral} />
+        <StatisticsLine name="Bad" value={bad} />
+        <StatisticsLine name="All" value={all} />
+        <StatisticsLine name="Average" value={average} accuracy={1} />
+        <StatisticsLine name="Positive" value={positive} accuracy={1} unit="%"/>
+      </tbody>
+    </table>
   ) : <p>No Feedback given</p>
 }
 
