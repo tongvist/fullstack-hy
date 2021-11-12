@@ -1,5 +1,7 @@
 import React, {useState} from "react";
 
+const Statistics = ({name, value, unit}) => <p>{name}: {value}{unit}</p>
+
 const App = () => {
   const [good, setGood] = useState(0);
   const [neutral, setNeutral] = useState(0);
@@ -8,7 +10,7 @@ const App = () => {
   // Good = 1, neutral = 0, bad = -1
   const all = good + neutral + bad; 
   const average = (good - bad) / all;
-  const positive = good / all;
+  const positive = (good / all) * 100;
 
   const handleGood = () => {
     setGood(good + 1);
@@ -30,12 +32,12 @@ const App = () => {
       
       <h1>Statistics</h1>
 
-      <p>Good: {good}</p>
-      <p>Neutral: {neutral}</p>
-      <p>Bad: {bad}</p>
-      <p>All: {all}</p>
-      <p>Average: {average}</p>
-      <p>Positive: {positive * 100}%</p>
+      <Statistics name="Good" value={good} />
+      <Statistics name="Neutral" value={neutral} />
+      <Statistics name="Bad" value={bad} />
+      <Statistics name="All" value={all} />
+      <Statistics name="Average" value={average} />
+      <Statistics name="Positive" value={positive} unit="%"/>
     </div>
   );
 }
