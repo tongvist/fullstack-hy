@@ -2,7 +2,7 @@ import React from "react";
 
 const Header = ({courseName}) => {  
   return (
-    <h1>{courseName}</h1>
+    <h2>{courseName}</h2>
   );
 }
 
@@ -45,7 +45,8 @@ const Course = ({course}) => {
 };
 
 const App = () => {
-  const course = {
+  const courses = [
+    { // Kurssi 1
     name: 'Half Stack application development',
     id: 1,
     parts: [
@@ -65,13 +66,34 @@ const App = () => {
         id: 3
       }
     ]
-  }
+  }, 
+  { // Kurssi 2
+    name: 'Node.js',
+    id: 2,
+    parts: [
+      {
+        name: 'Routing',
+        exercises: 3,
+        id: 1
+      },
+      {
+        name: 'Middlewares',
+        exercises: 7,
+        id: 2
+      }
+    ]
+  }];
+
+  const courseList = courses.map((course) => {
+    return <Course key={course.id} course={course}/>
+  })
 
   return (
     <div>
-      <Course course={course} />
+      <h1>Web development curriculum</h1>
+      {courseList}
     </div>
-  )
+  );
 }
 
 export default App;
