@@ -12,7 +12,7 @@ const Find = ({onChange}) => {
 
 const Country = ({info, countryName}) => {
   if (info) {
-    const languages = Object.values(info[0].languages).map(lang => <li>{lang}</li>)
+    const languages = Object.values(info[0].languages).map(lang => <li key={lang}>{lang}</li>)
         
     return (
       <div>
@@ -31,32 +31,40 @@ const Country = ({info, countryName}) => {
       </div>
     );
   }
-  return <p>{countryName}</p>
+  
+  return <p style={{display: "inline"}}>{countryName}</p>
 }
 
 const Results = (props) => {
   if (props.message) {
     return <p>{props.message}</p>
   }
-  const countries = props.data.map(country => <Country key={country.name} countryName={country.name}/>);
- 
+  
   if (props.data.length === 1) {
     return <Country info={props.data}/>;
   }
   
+  const countries = props.data.map(country => {
+    return (
+      <div key={country.name}>
+        <Country countryName={country.name} buttonHandler={props.buttonHandler}/> 
+        <button onClick={() => props.buttonHandler(country.name)}>Show</button>
+      </div>
+    )
+  });
+
   return <div>{countries}</div>
-    
 }
 
 const App = () => {
   const [countries, setCountries] = useState(null);
-  const [search, setSearch] = useState(null);
   const [message, setMessage] = useState("Enter a search term.");
 
   const handleSearch = (e) => {
     const searchTerm = e.target.value;
     if(searchTerm === "") {
       setMessage("Enter a search term.");
+      setCountries(null);
       return;
     }
     axios
@@ -71,37 +79,46 @@ const App = () => {
               subregion: country.subregion,
               languages: country.languages,
               flag: country.flags.png
-          }
+            }
           });
 
           if (results.length === 0) {
-            setSearch(null);
             setMessage("No results");
             setCountries(null);
             return;
           }
 
-          else if (results.length === 1) {
-            setCountries(results);
-            return;
-          }
           else if (results.length > 10) {
             setMessage("Over 10 results");
-            // setSearch(null)
             setCountries(null);
             return;
           }
+          
           setCountries(results);
-          // setMessage("Enter a search term.");
-      });
+          return;
+      })};
 
-    // setSearch(searchTerm);
-  }
+  const showCountry = (countryName) => {
+    
+    axios
+      .get(`https://restcountries.com/v3.1/name/${countryName.toLowerCase()}`)
+      .then(response => {
+        const countryData = response.data.map(country => {
+          return {
+            name: country.name.common,
+            capital: country.capital,
+            subregion: country.subregion,
+            languages: country.languages,
+            flag: country.flags.png
+          }
+        });
+        setCountries(countryData);
+    })}
 
   return (
     <div>
       <Find onChange={handleSearch}/>
-      {countries ? <Results data={countries}/> : <Results message={message}/> }
+      {countries ? <Results data={countries} buttonHandler={(countryName) => showCountry(countryName)}/> : <Results message={message}/> }
     </div>
   );
 }
