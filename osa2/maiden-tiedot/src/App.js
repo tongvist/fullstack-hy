@@ -10,29 +10,65 @@ const Find = ({onChange}) => {
   )
 }
 
-const Country = ({info, countryName}) => {
-  if (info) {
-    const languages = Object.values(info[0].languages).map(lang => <li key={lang}>{lang}</li>)
-        
-    return (
-      <div>
-        <h2>{info[0].name}</h2>
-        <p>Capital: {info[0].capital}</p>
-        <p>Region: {info[0].subregion}</p>
-
-        <h3>Languages</h3>
-      
-        <ul>
-          {languages}
-        </ul>
-        <div>
-          <img src={info[0].flag} alt="" width="200px"></img>
-        </div>
-      </div>
-    );
-  }
+const Country = (props) => {
+  const [weather, setWeather] = useState({});
   
-  return <p style={{display: "inline"}}>{countryName}</p>
+  if (props.info === null) {
+    return <p style={{display: "inline"}}>{props.countryName}</p>
+  }
+
+  const countryInfo = props.info[0];
+  const languages = Object.values(countryInfo.languages).map(lang => <li key={lang}>{lang}</li>);
+  const {capital, flag, name, subregion} = countryInfo;
+  const apiKey = process.env.REACT_APP_API_KEY;
+
+  try {
+    axios.get(`http://api.weatherstack.com/current?access_key=${apiKey}&query=${encodeURIComponent(capital)}`)
+    .then(response => {
+      console.log("current", response.data.current);
+      const weatherData = response.data.current;
+        const weather = {
+          temperature: weatherData.temperature,
+          icon: weatherData.weather_icons,
+          windSpeed: weatherData.wind_speed,
+          windDirection: weatherData.wind_dir
+        }
+      
+      setWeather(weather);
+    });
+
+  } catch(e) {
+    console.log(e);
+  }
+
+  console.log("weatherInfo: ", weather);
+  const {temperature, icon, windSpeed, windDirection} = weather;
+        
+  return (
+    <div>
+      <h2>{name}</h2>
+      <p>Capital: {capital}</p>
+      <p>Region: {subregion}</p>
+
+      <h3>Languages</h3>
+    
+      <ul>
+        {languages}
+      </ul>
+      <div>
+        <img src={flag} alt="" width="200px"></img>
+      </div>
+
+      <h3>Weather in {capital}</h3>
+      <p>Temperature: {temperature} Celsius</p>
+      <div>
+        <img src={icon} alt="" width="100px"></img>
+      </div>
+      <p>Wind: {windSpeed} mph, direction {windDirection}</p>
+
+    </div>
+  );
+  
 }
 
 const Results = (props) => {
@@ -47,8 +83,8 @@ const Results = (props) => {
   const countries = props.data.map(country => {
     return (
       <div key={country.name}>
-        <Country countryName={country.name} buttonHandler={props.buttonHandler}/> 
-        <button onClick={() => props.buttonHandler(country.name)}>Show</button>
+        <Country countryName={country.name} buttonHandler={props.buttonHandler} info={null}/> 
+        <button onClick={props.buttonHandler}>Show</button>
       </div>
     )
   });
@@ -93,17 +129,17 @@ const App = () => {
             setCountries(null);
             return;
           }
-          
+          console.log(results);
           setCountries(results);
           return;
       })};
 
-  const showCountry = (countryName) => {
-    
+  const showCountry = countryName => {
+    let countryData = [];
     axios
       .get(`https://restcountries.com/v3.1/name/${countryName.toLowerCase()}`)
       .then(response => {
-        const countryData = response.data.map(country => {
+        countryData = response.data.map(country => {
           return {
             name: country.name.common,
             capital: country.capital,
@@ -112,8 +148,10 @@ const App = () => {
             flag: country.flags.png
           }
         });
-        setCountries(countryData);
-    })}
+      });
+
+    setCountries(countryData);
+  }
 
   return (
     <div>
