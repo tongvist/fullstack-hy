@@ -34,8 +34,20 @@ const App = () => {
     const found = persons.find(person => person.name === newName);
 
     if (found) {
-      alert(`${newName} is already in the list`);
-      return;
+      const confirm = window.confirm(`Update number for ${found.name}?`);
+
+      if (!confirm) {
+        return;
+      }
+
+      phonebook.update({...found, number: newNumber})
+        .then(updatedPerson => {
+          setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson));
+          setNewName('');
+          setNewNumber('');
+          e.target.reset();
+        });
+      return; 
     }
 
     const newPerson = {
@@ -61,7 +73,7 @@ const App = () => {
   const handleDelete = (id) => {
     const personToDelete = persons.find(person => person.id === id);
     const confirm = window.confirm(`Delete ${personToDelete.name}?`);
-    
+
     if (!confirm) {
       return;
     }
