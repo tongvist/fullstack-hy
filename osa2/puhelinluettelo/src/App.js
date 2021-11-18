@@ -4,6 +4,8 @@ import PersonList from './components/PersonList';
 import AddNew from './components/AddNew';
 import axios from 'axios';
 
+const baseUrl = "http://localhost:3001/persons"
+
 const App = () => {
   const [ persons, setPersons] = useState([]);
   const [ newName, setNewName ] = useState('');
@@ -12,7 +14,7 @@ const App = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3001/persons")
+      .get(baseUrl)
       .then(response => {
         setPersons(response.data);
       });
@@ -42,10 +44,15 @@ const App = () => {
       number: newNumber
     }
 
-    setPersons(persons.concat(person));
-    setNewName('');
-    setNewNumber('');
-    e.target.reset();
+    axios.post(baseUrl, person)
+      .then(response => {
+        let newPerson = response.data;
+        setPersons(persons.concat(newPerson));
+        setNewName('');
+        setNewNumber('');
+        e.target.reset();
+      });
+
   }
 
   const handleFilter = (e) => {
