@@ -25,7 +25,6 @@ const Country = (props) => {
   try {
     axios.get(`http://api.weatherstack.com/current?access_key=${apiKey}&query=${encodeURIComponent(capital)}`)
     .then(response => {
-      console.log("current", response.data.current);
       const weatherData = response.data.current;
         const weather = {
           temperature: weatherData.temperature,
@@ -35,13 +34,15 @@ const Country = (props) => {
         }
       
       setWeather(weather);
-    });
+    }).catch((error) => {
+      
+      return;
+    })
 
   } catch(e) {
     console.log(e);
   }
 
-  console.log("weatherInfo: ", weather);
   const {temperature, icon, windSpeed, windDirection} = weather;
         
   return (
