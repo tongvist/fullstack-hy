@@ -16,24 +16,9 @@
       "id": 3
     },
     {
-      "name": "Mary Poppendieck",
-      "number": "39-23-6423122",
-      "id": 4
-    },
-    {
-      "name": "jim",
-      "number": "10123123",
-      "id": 5
-    },
-    {
       "name": "Dwight Schrute",
       "number": "010-1239872",
       "id": 6
-    },
-    {
-      "name": "Pam Beesly",
-      "number": "0101239123",
-      "id": 7
     },
     {
       "name": "Ron Swanson",
@@ -44,11 +29,6 @@
       "name": "Andy Dwyer",
       "number": "010872494",
       "id": 9
-    },
-    {
-      "name": "Ann Perkins",
-      "number": "0202349834",
-      "id": 10
     }
   ]
 }

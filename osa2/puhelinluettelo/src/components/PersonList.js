@@ -1,14 +1,14 @@
 import React from "react";
 
-const Person = ({name, number}) => {
+const Person = ({id, name, number, handleDelete}) => {
     return (
-      <p>{name} {number}</p>
+      <p>{name} {number} <button onClick={() => handleDelete(id)}>delete</button></p>
     )
 }
   
-const PersonList = ({persons, filter}) => {
+const PersonList = ({persons, filter, handleDelete}) => {
     const list = persons.map(person => {
-        return <Person key={person.name} name={person.name} number={person.number}/>
+        return <Person key={person.id} id={person.id} name={person.name} number={person.number} handleDelete={handleDelete}/>
     });
 
     return filter === '' ? 

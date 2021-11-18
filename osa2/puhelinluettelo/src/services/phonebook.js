@@ -11,6 +11,11 @@ const add = newPerson => {
     return request.then(response => response.data);
 }
 
-const phonebook = { getAll, add }
+const remove = id => {
+    const request = axios.delete(`${baseUrl}/${id}`);
+    return request.then(response => id);
+}
+
+const phonebook = { getAll, add, remove }
 
 export default phonebook;

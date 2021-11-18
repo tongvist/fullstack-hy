@@ -15,7 +15,8 @@ const App = () => {
       .getAll()
       .then(contacts => {
         setPersons(contacts);
-      });
+      })
+      .catch(error => console.log(error));
   }, []);
 
   const handleChange = (e) => {
@@ -49,11 +50,27 @@ const App = () => {
         setNewName('');
         setNewNumber('');
         e.target.reset();
-      });
+      })
+      .catch(error => console.log(error));
   }
 
   const handleFilter = (e) => {
     setNameFilter(e.target.value);
+  }
+
+  const handleDelete = (id) => {
+    const personToDelete = persons.find(person => person.id === id);
+    const confirm = window.confirm(`Delete ${personToDelete.name}?`);
+    
+    if (!confirm) {
+      return;
+    }
+
+    phonebook.remove(id)
+      .then(id => {
+        setPersons(persons.filter(person => person.id !== id));
+      })
+      .catch(error => console.log(error));
   }
 
   return (
@@ -72,7 +89,7 @@ const App = () => {
 
       <h2>Numbers</h2>
       
-      <PersonList persons={persons} filter={nameFilter}/>
+      <PersonList persons={persons} filter={nameFilter} handleDelete={handleDelete}/>
       
     </div>
   )
