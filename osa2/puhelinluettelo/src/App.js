@@ -50,9 +50,18 @@ const App = () => {
           setNewName('');
           setNewNumber('');
           e.target.reset();
+        })
+        .catch(error => {
+          console.log("ERRORRR", error);
+          setPersons(persons.filter(person => person.id !== found.id));
+          showNotification(false, `Contact ${found.name} was already deleted from database, updating list...`);
+          setNewName('');
+          setNewNumber('');
+          e.target.reset();
         });
-      return; 
-    }
+
+        return; 
+    };
 
     const newPerson = {
       name: newName, 
@@ -85,11 +94,12 @@ const App = () => {
 
     phonebook.remove(id)
       .then(id => {
-        const personToRemove = persons.find(person => person.id === id);
         setPersons(persons.filter(person => person.id !== id));
-        showNotification(true, `Removed contact: ${personToRemove.name}`);
+        showNotification(true, `Removed contact: ${personToDelete.name}`);
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   const showNotification = (actionSuccessful, message) => {
