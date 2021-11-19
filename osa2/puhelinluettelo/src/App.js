@@ -3,12 +3,15 @@ import Filter from './components/Filter';
 import PersonList from './components/PersonList';
 import AddNew from './components/AddNew';
 import phonebook from './services/phonebook';
+import Notification from './components/Notification';
 
 const App = () => {
   const [ persons, setPersons] = useState([]);
   const [ newName, setNewName ] = useState('');
   const [ newNumber, setNewNumber ] = useState('');
   const [ nameFilter, setNameFilter ] = useState('');
+  const [ notificationMessage, setNotificationMessage ] = useState('');
+  const [ success, setSuccess ] = useState(null);
 
   useEffect(() => {
     phonebook
@@ -43,6 +46,7 @@ const App = () => {
       phonebook.update({...found, number: newNumber})
         .then(updatedPerson => {
           setPersons(persons.map(person => person.id !== updatedPerson.id ? person : updatedPerson));
+          showNotification(true, `Updated contact ${updatedPerson.name}`);
           setNewName('');
           setNewNumber('');
           e.target.reset();
@@ -59,6 +63,7 @@ const App = () => {
       .add(newPerson)
       .then(createdPerson => {
         setPersons(persons.concat(createdPerson));
+        showNotification(true, `Added new contact: ${createdPerson.name}`);
         setNewName('');
         setNewNumber('');
         e.target.reset();
@@ -80,14 +85,27 @@ const App = () => {
 
     phonebook.remove(id)
       .then(id => {
+        const personToRemove = persons.find(person => person.id === id);
         setPersons(persons.filter(person => person.id !== id));
+        showNotification(true, `Removed contact: ${personToRemove.name}`);
       })
       .catch(error => console.log(error));
+  }
+
+  const showNotification = (actionSuccessful, message) => {
+    setSuccess(actionSuccessful);
+    setNotificationMessage(message);
+    setTimeout(() => {
+      setSuccess(null);
+      setNotificationMessage('');
+    }, 5000)
   }
 
   return (
     <div>
       <h1>Phonebook</h1>
+
+      <Notification message={notificationMessage} success={success}/>
 
       <Filter handleChange={handleFilter} value={nameFilter}/>
 
