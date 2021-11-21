@@ -52,7 +52,7 @@ const App = () => {
           e.target.reset();
         })
         .catch(error => {
-          console.log("ERRORRR", error);
+          
           setPersons(persons.filter(person => person.id !== found.id));
           showNotification(false, `Contact ${found.name} was already deleted from database, updating list...`);
           setNewName('');
