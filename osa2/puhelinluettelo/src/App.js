@@ -52,7 +52,7 @@ const App = () => {
           e.target.reset();
         })
         .catch(error => {
-          showNotification(false, 'Missing number.');
+          showNotification(false, error.response.data);
           setNewNumber('');
         });
 
@@ -74,7 +74,7 @@ const App = () => {
         e.target.reset();
       })
       .catch(error => {
-        showNotification(false, `Missing name or number for new contact.`);
+        showNotification(false, error.response.data);
       });
   }
 
