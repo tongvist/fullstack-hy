@@ -52,12 +52,8 @@ const App = () => {
           e.target.reset();
         })
         .catch(error => {
-          
-          setPersons(persons.filter(person => person.id !== found.id));
-          showNotification(false, `Contact ${found.name} was already deleted from database, updating list...`);
-          setNewName('');
+          showNotification(false, 'Missing number.');
           setNewNumber('');
-          e.target.reset();
         });
 
         return; 
@@ -99,6 +95,8 @@ const App = () => {
       })
       .catch(error => {
         console.log(error);
+        showNotification(true, `Contact ${personToDelete.name} was already removed from database, updating list...`);
+        setPersons(persons.filter(person => person.id !== personToDelete.id));
       });
   }
 
