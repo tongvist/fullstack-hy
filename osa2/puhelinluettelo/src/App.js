@@ -73,7 +73,9 @@ const App = () => {
         setNewNumber('');
         e.target.reset();
       })
-      .catch(error => console.log(error));
+      .catch(error => {
+        showNotification(false, `Missing name or number for new contact.`);
+      });
   }
 
   const handleFilter = (e) => {
