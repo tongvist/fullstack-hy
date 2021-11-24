@@ -1,4 +1,4 @@
-const { totalLikes, favoriteBlog } = require('../utils/list_helper');
+const { totalLikes, favoriteBlog, mostBlogs } = require('../utils/list_helper');
 
 const listWithOneBlog = [
   {
@@ -94,5 +94,25 @@ describe('favoriteBlog', () => {
   test('returns -1 when an emtpy array is provided', () => {
     const result = favoriteBlog([]);
     expect(result).toBe(-1);
+  });
+});
+
+describe('mostBlogs', () => {
+  test('returns null if an empty array is provided', () => {
+    const result = mostBlogs([]);
+    expect(result).toBe(null);
+  });
+
+  test('returns the name and number of blogs if only one blog is provided', () => {
+    const result = mostBlogs(listWithOneBlog);
+    expect(result).toEqual({ author: 'Edsger W. Dijkstra', blogs: 1 });
+  });
+
+  test('returns an object with the name of the author with most blogs and the number of blogs', () => {
+    const result = mostBlogs(blogs);
+    expect(result).toEqual({
+      author: 'Robert C. Martin',
+      blogs : 3
+    });
   });
 });
