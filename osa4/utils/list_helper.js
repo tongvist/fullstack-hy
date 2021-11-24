@@ -71,6 +71,37 @@ const mostBlogs = (blogs) => {
   return most;
 };
 
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) {
+    return 0;
+  }
+
+  let authorsLikes = [];
+  let authors = [];
+
+  blogs.forEach(blog => {
+    if (!authors.includes(blog.author)) {
+      authors.push(blog.author);
+      authorsLikes.push({ author: blog.author, likes: blog.likes });
+    }
+    else {
+      let idx = authors.findIndex(author => author === blog.author);
+      authorsLikes[idx].likes += blog.likes;
+    }
+  });
+
+  let mostLikes = null;
+  for (let i = 0; i < authorsLikes.length; i++) {
+    if (!mostLikes || authorsLikes[i].likes > mostLikes.likes) {
+      mostLikes = authorsLikes[i];
+    }
+    continue;
+  }
+
+  return mostLikes;
+
+};
+
 module.exports = {
-  dummy, totalLikes, favoriteBlog, mostBlogs
+  dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes
 };

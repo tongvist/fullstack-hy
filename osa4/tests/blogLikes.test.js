@@ -1,4 +1,4 @@
-const { totalLikes, favoriteBlog, mostBlogs } = require('../utils/list_helper');
+const { totalLikes, favoriteBlog, mostBlogs, mostLikes } = require('../utils/list_helper');
 
 const listWithOneBlog = [
   {
@@ -114,5 +114,22 @@ describe('mostBlogs', () => {
       author: 'Robert C. Martin',
       blogs : 3
     });
+  });
+});
+
+describe('mostLikes', () => {
+  test('returns the name and the amount of likes for the author with most likes', () => {
+    const result = mostLikes(blogs);
+    expect(result).toEqual({ author: 'Edsger W. Dijkstra', likes: 17 });
+  });
+
+  test('returns the name and number of likes for the only blog if one blog is provided', () => {
+    const result = mostLikes(listWithOneBlog);
+    expect(result).toEqual({ author: 'Edsger W. Dijkstra', likes: 5 });
+  });
+
+  test('returns zero if an empty array is provided', () => {
+    const result = mostLikes([]);
+    expect(result).toBe(0);
   });
 });
