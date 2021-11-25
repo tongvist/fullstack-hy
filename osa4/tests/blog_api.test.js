@@ -82,6 +82,34 @@ test('blogs have a identification field called "id"', async () => {
   expect(response.body[0].id).toBeDefined();
 });
 
+test('new blog can be added', async () => {
+
+  const newBlog = {
+    title: 'Bear attacks and how to defend',
+    author: 'Dwight Schrute',
+    url: 'blogs.dundermifflin.com'
+  };
+
+  const response = await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogs = await api.get('/api/blogs');
+
+  const blogFields = blogs.body.map(blog => {
+    return {
+      title: blog.title,
+      author: blog.author,
+      url: blog.url
+    };
+  });
+
+  expect(blogFields).toContainEqual(newBlog);
+  expect(blogs.body).toHaveLength(initialBlogs.length + 1);
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
