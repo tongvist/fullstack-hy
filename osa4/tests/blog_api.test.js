@@ -1,3 +1,4 @@
+const { text } = require('express');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
@@ -124,6 +125,30 @@ test('if value for "likes" is not set it defaults to zero', async () => {
     .expect('Content-Type', /application\/json/);
 
   expect(response.body.likes).toBe(0);
+});
+
+test('responds with 400 Bad Request when trying to add a blog without "url" field', async () => {
+  const blogWithoutUrl = {
+    title: 'Unit testing is a lot of fun',
+    author: 'Everyone'
+  };
+
+  const response = await api
+    .post('/api/blogs')
+    .send(blogWithoutUrl)
+    .expect(400);
+});
+
+test('responds with 400 Bad Request when trying to add a blog without "title" field', async () => {
+  const blogWithoutTitle = {
+    author: 'Just Me',
+    url: 'not.important.io'
+  };
+
+  const response = await api
+    .post('/api/blogs')
+    .send(blogWithoutTitle)
+    .expect(400);
 });
 
 afterAll(() => {
