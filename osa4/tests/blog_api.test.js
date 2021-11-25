@@ -1,11 +1,19 @@
-const { text } = require('express');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
 const app = require('../app');
 
 const api = supertest(app);
-
 const Blog = require('../models/blog');
+
+const validNonExistingId = async () => {
+  const deletedSoon = { title: 'This will be deleted', author: 'unknown', url: 'blog.tobe.deleted' };
+  const addedTempBlog = await api.post('/api/blogs')
+    .send(deletedSoon);
+  const id = addedTempBlog.body.id;
+
+  await api.delete(`/api/blogs/${id}`);
+  return id;
+};
 
 const initialBlogs = [
   {
@@ -65,90 +73,108 @@ beforeEach(async () => {
   const promiseArray = blogObjects.map(blog => blog.save());
   await Promise.all(promiseArray);
 });
-
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
-});
-
-test('all blogs are returned', async () => {
-  const response = await api.get('/api/blogs');
-  expect(response.body).toHaveLength(initialBlogs.length);
-});
-
-test('blogs have a identification field called "id"', async () => {
-  const response = await api.get('/api/blogs/');
-  expect(response.body[0].id).toBeDefined();
-});
-
-test('new blog can be added', async () => {
-
-  const newBlog = {
-    title: 'Bear attacks and how to defend',
-    author: 'Dwight Schrute',
-    url: 'blogs.dundermifflin.com'
-  };
-
-  const response = await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/);
-
-  const blogs = await api.get('/api/blogs');
-
-  const blogFields = blogs.body.map(blog => {
-    return {
-      title: blog.title,
-      author: blog.author,
-      url: blog.url
-    };
+describe('when fetching all blogs', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
   });
 
-  expect(blogFields).toContainEqual(newBlog);
-  expect(blogs.body).toHaveLength(initialBlogs.length + 1);
+  test('all blogs are returned', async () => {
+    const response = await api.get('/api/blogs');
+    expect(response.body).toHaveLength(initialBlogs.length);
+  });
+
+  test('blogs have a identification field called "id"', async () => {
+    const response = await api.get('/api/blogs/');
+    expect(response.body[0].id).toBeDefined();
+  });
 });
 
-test('if value for "likes" is not set it defaults to zero', async () => {
-  const newBlog = {
-    title: 'Bear attacks and how to defend',
-    author: 'Dwight Schrute',
-    url: 'blogs.dundermifflin.com'
-  };
+describe('when adding a new blog', () => {
+  test('new blog can be added', async () => {
 
-  const response = await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/);
+    const newBlog = {
+      title: 'Bear attacks and how to defend',
+      author: 'Dwight Schrute',
+      url: 'blogs.dundermifflin.com'
+    };
 
-  expect(response.body.likes).toBe(0);
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const blogs = await api.get('/api/blogs');
+
+    const blogFields = blogs.body.map(blog => {
+      return {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url
+      };
+    });
+
+    expect(blogFields).toContainEqual(newBlog);
+    expect(blogs.body).toHaveLength(initialBlogs.length + 1);
+  });
+
+  test('if value for "likes" is not set it defaults to zero', async () => {
+    const newBlog = {
+      title: 'Bear attacks and how to defend',
+      author: 'Dwight Schrute',
+      url: 'blogs.dundermifflin.com'
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body.likes).toBe(0);
+  });
+
+  test('responds with 400 Bad Request when trying to add a blog without "url" field', async () => {
+    const blogWithoutUrl = {
+      title: 'Unit testing is a lot of fun',
+      author: 'Everyone'
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(blogWithoutUrl)
+      .expect(400);
+  });
+
+  test('responds with 400 Bad Request when trying to add a blog without "title" field', async () => {
+    const blogWithoutTitle = {
+      author: 'Just Me',
+      url: 'not.important.io'
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(blogWithoutTitle)
+      .expect(400);
+  });
 });
 
-test('responds with 400 Bad Request when trying to add a blog without "url" field', async () => {
-  const blogWithoutUrl = {
-    title: 'Unit testing is a lot of fun',
-    author: 'Everyone'
-  };
+describe('when deleting a blog', () => {
+  test('responds with 204 with a valid id', async () => {
+    const blogsInStart = await api.get('/api/blogs');
+    const blogToDelete = blogsInStart.body[0];
 
-  const response = await api
-    .post('/api/blogs')
-    .send(blogWithoutUrl)
-    .expect(400);
-});
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .expect(204);
 
-test('responds with 400 Bad Request when trying to add a blog without "title" field', async () => {
-  const blogWithoutTitle = {
-    author: 'Just Me',
-    url: 'not.important.io'
-  };
+    const blogsAfter = await api.get('/api/blogs');
+    expect(blogsAfter.body).toHaveLength(blogsInStart.body.length - 1);
+  });
 
-  const response = await api
-    .post('/api/blogs')
-    .send(blogWithoutTitle)
-    .expect(400);
 });
 
 afterAll(() => {
