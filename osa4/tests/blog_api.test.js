@@ -177,6 +177,20 @@ describe('when deleting a blog', () => {
 
 });
 
+describe('updating a blog', () => {
+  test('returns the updated blog with correct modifications', async () => {
+    const blogsInStart = await api.get('/api/blogs');
+    const blogToUpdate = blogsInStart.body[0];
+
+    const updated = await api.put(`/api/blogs/${blogToUpdate.id}`)
+      .send({ ...blogToUpdate, likes: blogToUpdate.likes + 1 })
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
+
+    expect(updated.body.likes).toBe(blogToUpdate.likes + 1);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
