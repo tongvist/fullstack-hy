@@ -62,9 +62,36 @@ blogRouter.post('/', async (request, response, next) => {
 });
 
 blogRouter.delete('/:id', async (request, response, next) => {
-  const id = request.params.id;
+  if (!request.token) {
+    return response.status(401).end();
+  }
+
+  const decodedToken = jwt.verify(request.token, process.env.SECRET);
+  if (!decodedToken.id) {
+    return response.status(401).end();
+  }
+
+  const blogId = request.params.id;
+
   try {
-    await Blog.findByIdAndRemove(id);
+    const blog = await Blog.findById(blogId);
+
+    if (!blog) {
+      return response.status(404).send({ message: 'Blog was already deleted' });
+    }
+    const userId = blog.user.toString();
+
+    if (decodedToken.id !== userId) {
+      return response.status(401).send({ error: 'You cannot delete this' });
+    }
+
+    await Blog.findByIdAndRemove(blogId);
+
+    const user = await User.findById(userId);
+    const updatedBlogs = user.blogs.filter(userBlog => userBlog.toString() !== blog._id.toString());
+
+    await User.updateOne({ _id: user._id }, { blogs: updatedBlogs });
+
     return response.status(204).end();
   } catch (error) {
     next(error);
