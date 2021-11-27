@@ -1,8 +1,9 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJfMSIsImlkIjoiNjFhMjMxMjMzMWUzNWNlN2ZkNTg5ZTYyIiwiaWF0IjoxNjM4MDIxOTQ3LCJleHAiOjE2MzgwMjE5Nzd9.MCVV4dmr5tlo-vvKXJw_1LZ6cFVRshumsvJm3o6v0BY
 
 {
-    "title": "This should also work",
+    "title": "This was also added by user_1, volume 1300",
     "author": "Blog Author",
     "url": "testing.url",
     "likes": 5

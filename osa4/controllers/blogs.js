@@ -1,7 +1,15 @@
 const blogRouter = require('express').Router();
 const Blog = require('../models/blog');
+const jwt = require('jsonwebtoken');
 const logger = require('../utils/logger');
 const User = require('../models/user');
+
+const getTokenFrom = (request) => {
+  const authorization = request.get('authorization');
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    return authorization.substring(7);
+  }
+};
 
 blogRouter.get('/', async (request, response) => {
   try {
@@ -19,21 +27,25 @@ blogRouter.get('/', async (request, response) => {
 blogRouter.post('/', async (request, response, next) => {
   let data = request.body;
 
-  if (!data.title || !data.url) {
-    return response.status(400).send({ error: 'Missing required information.' });
-  }
-
-  if (!data.likes) {
-    data.likes = 0;
-  }
-
   try {
-    const users = await User.find({});
-    const user = users[0];
+    const token = getTokenFrom(request);
+    const decodedToken = jwt.verify(token, process.env.SECRET);
 
+    if (!token || !decodedToken.id) {
+      return response.status(401).json({ error: 'missing or invalid token' });
+    }
+
+    if (!data.title || !data.url) {
+      return response.status(400).send({ error: 'Missing required information.' });
+    }
+
+    if (!data.likes) {
+      data.likes = 0;
+    }
+
+    const user = await User.findById(decodedToken.id);
     if (!user) {
       const noUsersError =  new Error('No users in database');
-      console.log(noUsersError.message);
       return next(noUsersError);
     }
 
@@ -47,8 +59,8 @@ blogRouter.post('/', async (request, response, next) => {
 
     const savedBlog = await blog.save();
 
-    user.blogs = user.blogs.concat(savedBlog._id);
-    await user.save();
+    const newBlogs = user.blogs.concat(savedBlog);
+    await User.updateOne({ _id: user._id }, { blogs: newBlogs });
 
     response.status(201).json(savedBlog);
 
