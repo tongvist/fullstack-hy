@@ -1,4 +1,5 @@
 const blogRouter = require('./controllers/blogs');
+const loginRouter = require('./controllers/login');
 const userRouter = require('./controllers/users');
 const cors = require('cors');
 const config = require('./utils/config');
@@ -19,6 +20,7 @@ app.use(cors());
 app.use(express.json());
 app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
+app.use('/api/login', loginRouter);
 
 const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {

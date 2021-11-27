@@ -24,7 +24,8 @@ describe('when adding a new user', () => {
 
     const passwordHash = await bcrypt.hash('password', 10);
     const user = new User({
-      username:'jestuser',
+      username: 'jestuser',
+      name: 'Jest User',
       passwordHash
     });
 
@@ -125,6 +126,42 @@ describe('when adding a new user', () => {
 
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd.length).toBe(userAtStart.length);
+  });
+});
+
+describe('when logging a user in', () => {
+  test('login succeeds with valid username and password', async () => {
+    const newUser = {
+      username: 'logintest',
+      password: 'password'
+    };
+
+    await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(201);
+
+    const request = {
+      username: 'logintest',
+      password: 'password'
+    };
+
+    const result = await api.post('/api/login').send(request).expect(200);
+    expect(result.body.username).toBe(newUser.username);
+  });
+
+  test('login fails and responds with status code 401 with incorrect username or password', async () => {
+    const userAtStart = await helper.usersInDb();
+
+    const newUser = {
+      username: 'logintest',
+      password: 'notvalid'
+    };
+
+    await api
+      .post('/api/login')
+      .send(newUser)
+      .expect(401);
   });
 });
 
