@@ -1,6 +1,8 @@
+const app = require('../app');
+const helper = require('./test_helper');
 const mongoose = require('mongoose');
 const supertest = require('supertest');
-const app = require('../app');
+const User = require('../models/user');
 
 const api = supertest(app);
 const Blog = require('../models/blog');
@@ -93,7 +95,12 @@ describe('when fetching all blogs', () => {
 });
 
 describe('when adding a new blog', () => {
-  test('new blog can be added', async () => {
+  test('new blog can be added if a user exists in database', async () => {
+    await User.deleteMany({});
+    const newUser = helper.initialUsers[0];
+    await api
+      .post('/api/users')
+      .send(newUser);
 
     const newBlog = {
       title: 'Bear attacks and how to defend',
@@ -159,6 +166,25 @@ describe('when adding a new blog', () => {
       .post('/api/blogs')
       .send(blogWithoutTitle)
       .expect(400);
+  });
+
+  test('user information is added to the blog', async () => {
+    const users = await helper.usersInDb();
+    const userToAdd = users[0];
+
+    const blog = {
+      title: 'blog with user',
+      author: 'User Name',
+      url: 'not.valid.uri',
+    };
+
+    const newBlog = await api
+      .post('/api/blogs')
+      .send(blog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    expect(newBlog.body.user.toString()).toBe(userToAdd.id);
   });
 });
 

@@ -4,7 +4,9 @@ const User = require ('../models/user');
 
 userRouter.get('/', async (request, response, next) => {
   try {
-    const users = await User.find({});
+    const users = await User
+      .find({})
+      .populate('blogs');
     response.json(users.map(user => user.toJSON()));
   } catch (error) {
     next(error);
@@ -28,7 +30,8 @@ userRouter.post('/', async (request, response, next) => {
       passwordHash
     });
 
-    const savedUser = await User.create(newUser);
+    // const savedUser = await User.create(newUser);
+    const savedUser = await newUser.save();
     response.status(201).json(savedUser);
 
   } catch (error) {
