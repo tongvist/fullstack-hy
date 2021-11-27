@@ -1,11 +1,12 @@
 const blogRouter = require('./controllers/blogs');
-const loginRouter = require('./controllers/login');
-const userRouter = require('./controllers/users');
-const cors = require('cors');
 const config = require('./utils/config');
+const cors = require('cors');
 const express = require('express');
 const logger = require('./utils/logger');
+const loginRouter = require('./controllers/login');
 const mongoose = require('mongoose');
+const { tokenExtractor } = require('./controllers/middleware');
+const userRouter = require('./controllers/users');
 
 const app = express();
 
@@ -18,6 +19,7 @@ mongoose.connect(config.MONGODB_URI)
 
 app.use(cors());
 app.use(express.json());
+app.use(tokenExtractor);
 app.use('/api/blogs', blogRouter);
 app.use('/api/users', userRouter);
 app.use('/api/login', loginRouter);
@@ -38,7 +40,7 @@ const errorHandler = (error, request, response, next) => {
 };
 
 const unknownEndpoint = (request, response, next) => {
-  request.status(404).send({ error: 'Unknown endpoint' });
+  return response.status(404).send({ error: 'Unknown endpoint' });
 };
 
 app.use(unknownEndpoint);

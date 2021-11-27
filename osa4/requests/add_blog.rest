@@ -1,9 +1,9 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
-Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InVzZXJfMSIsImlkIjoiNjFhMjMxMjMzMWUzNWNlN2ZkNTg5ZTYyIiwiaWF0IjoxNjM4MDIxOTQ3LCJleHAiOjE2MzgwMjE5Nzd9.MCVV4dmr5tlo-vvKXJw_1LZ6cFVRshumsvJm3o6v0BY
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImluaXRpYWxfMSIsImlkIjoiNjFhMjI4OGVmZDA4MzkyNGJjODM1ODEwIiwiaWF0IjoxNjM4MDI0NTc4LCJleHAiOjE2MzgwMjgxNzh9.7oTTWTgrgkqi8Rv0FeyWdpM88FGCQoaCxkx1QayF6AE
 
 {
-    "title": "This was also added by user_1, volume 1300",
+    "title": "This was also added by user_1, volume 5",
     "author": "Blog Author",
     "url": "testing.url",
     "likes": 5
