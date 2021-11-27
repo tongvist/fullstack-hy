@@ -21,12 +21,6 @@ blogRouter.post('/', async (request, response, next) => {
   let data = request.body;
 
   try {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET);
-
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'missing or invalid token' });
-    }
-
     if (!data.title || !data.url) {
       return response.status(400).send({ error: 'Missing required information.' });
     }
@@ -35,24 +29,18 @@ blogRouter.post('/', async (request, response, next) => {
       data.likes = 0;
     }
 
-    const user = await User.findById(decodedToken.id);
-    if (!user) {
-      const noUsersError =  new Error('No users in database');
-      return next(noUsersError);
-    }
-
     const blog = new Blog({
       title: data.title,
       author: data.author,
       url: data.url,
       likes: data.likes,
-      user: user._id
+      user: request.user._id
     });
 
     const savedBlog = await blog.save();
 
-    const newBlogs = user.blogs.concat(savedBlog);
-    await User.updateOne({ _id: user._id }, { blogs: newBlogs });
+    const newBlogs = request.user.blogs.concat(savedBlog);
+    await User.updateOne({ _id: request.user._id }, { blogs: newBlogs });
 
     return response.status(201).json(savedBlog);
 
@@ -62,14 +50,6 @@ blogRouter.post('/', async (request, response, next) => {
 });
 
 blogRouter.delete('/:id', async (request, response, next) => {
-  if (!request.token) {
-    return response.status(401).end();
-  }
-
-  const decodedToken = jwt.verify(request.token, process.env.SECRET);
-  if (!decodedToken.id) {
-    return response.status(401).end();
-  }
 
   const blogId = request.params.id;
 
@@ -81,16 +61,14 @@ blogRouter.delete('/:id', async (request, response, next) => {
     }
     const userId = blog.user.toString();
 
-    if (decodedToken.id !== userId) {
+    if (request.user._id.toString() !== userId) {
       return response.status(401).send({ error: 'You cannot delete this' });
     }
 
     await Blog.findByIdAndRemove(blogId);
 
-    const user = await User.findById(userId);
-    const updatedBlogs = user.blogs.filter(userBlog => userBlog.toString() !== blog._id.toString());
-
-    await User.updateOne({ _id: user._id }, { blogs: updatedBlogs });
+    const updatedBlogs = request.user.blogs.filter(userBlog => userBlog.toString() !== blog._id.toString());
+    await User.updateOne({ _id: request.user._id }, { blogs: updatedBlogs });
 
     return response.status(204).end();
   } catch (error) {
