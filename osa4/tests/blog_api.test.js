@@ -7,14 +7,25 @@ const User = require('../models/user');
 const api = supertest(app);
 const Blog = require('../models/blog');
 
-const validNonExistingId = async () => {
+const createTempBlog = async (authHeader) => {
   const deletedSoon = { title: 'This will be deleted', author: 'unknown', url: 'blog.tobe.deleted' };
   const addedTempBlog = await api.post('/api/blogs')
+    .set('Authorization', authHeader)
     .send(deletedSoon);
   const id = addedTempBlog.body.id;
 
-  await api.delete(`/api/blogs/${id}`);
+  // await api.delete(`/api/blogs/${id}`);
   return id;
+};
+
+const generateAuthHeader = async (uname, pword) => {
+  const user = await api.post('/api/login')
+    .send({
+      username: uname,
+      password: pword
+    });
+  const token = user.body.token;
+  return `bearer ${token}`;
 };
 
 const initialBlogs = [
@@ -68,14 +79,22 @@ const initialBlogs = [
   }
 ];
 
-beforeEach(async () => {
-  await Blog.deleteMany({});
-  const blogObjects = initialBlogs
-    .map(blog => new Blog(blog));
-  const promiseArray = blogObjects.map(blog => blog.save());
-  await Promise.all(promiseArray);
-});
+// beforeEach(async () => {
+//   await Blog.deleteMany({});
+//   const blogObjects = initialBlogs
+//     .map(blog => new Blog(blog));
+//   const promiseArray = blogObjects.map(blog => blog.save());
+//   await Promise.all(promiseArray);
+// });
 describe('when fetching all blogs', () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
+    const blogObjects = initialBlogs
+      .map(blog => new Blog(blog));
+    const promiseArray = blogObjects.map(blog => blog.save());
+    await Promise.all(promiseArray);
+  });
+
   test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')
@@ -95,9 +114,18 @@ describe('when fetching all blogs', () => {
 });
 
 describe('when adding a new blog', () => {
-  test('new blog can be added if a user exists in database', async () => {
+  beforeEach(async () => {
+    await Blog.deleteMany({});
     await User.deleteMany({});
-    const newUser = helper.initialUsers[0];
+    await api.post('/api/users').send({ username: 'user', name: 'User One', password: 'password' });
+  });
+  test('new blog can be added if a user exists in database', async () => {
+    // await User.deleteMany({});
+    // const newUser = helper.initialUsers[0];
+    const newUser = {
+      username: 'user',
+      password: 'password'
+    };
     await api
       .post('/api/users')
       .send(newUser);
@@ -108,24 +136,28 @@ describe('when adding a new blog', () => {
       url: 'blogs.dundermifflin.com'
     };
 
+    const token = await generateAuthHeader(newUser.username, newUser.password);
+
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', token)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
     const blogs = await api.get('/api/blogs');
 
-    const blogFields = blogs.body.map(blog => {
-      return {
-        title: blog.title,
-        author: blog.author,
-        url: blog.url
-      };
-    });
+    // const blogFields = blogs.body.map(blog => {
+    //   return {
+    //     title: blog.title,
+    //     author: blog.author,
+    //     url: blog.url
+    //   };
+    // });
 
-    expect(blogFields).toContainEqual(newBlog);
-    expect(blogs.body).toHaveLength(initialBlogs.length + 1);
+    // expect(blogFields).toContainEqual(newBlog);
+    expect(response.body.author).toBe(newBlog.author);
+    expect(blogs.body).toHaveLength(1);
   });
 
   test('if value for "likes" is not set it defaults to zero', async () => {
@@ -134,9 +166,16 @@ describe('when adding a new blog', () => {
       author: 'Dwight Schrute',
       url: 'blogs.dundermifflin.com'
     };
+    const newUser = {
+      username: 'user',
+      password: 'password'
+    };
+
+    const token = await generateAuthHeader(newUser.username, newUser.password);
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', token)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -144,26 +183,41 @@ describe('when adding a new blog', () => {
     expect(response.body.likes).toBe(0);
   });
 
-  test('responds with 400 Bad Request when trying to add a blog without "url" field', async () => {
+  test('responds with 400 Bad Request when trying to add a blog without url field', async () => {
     const blogWithoutUrl = {
       title: 'Unit testing is a lot of fun',
       author: 'Everyone'
     };
+    const newUser = {
+      username: 'user',
+      password: 'password'
+    };
+
+    const token = await generateAuthHeader(newUser.username, newUser.password);
 
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', token)
       .send(blogWithoutUrl)
       .expect(400);
   });
 
-  test('responds with 400 Bad Request when trying to add a blog without "title" field', async () => {
+  test('responds with 400 Bad Request when trying to add a blog without title field', async () => {
     const blogWithoutTitle = {
       author: 'Just Me',
       url: 'not.important.io'
     };
 
+    const newUser = {
+      username: 'user',
+      password: 'password'
+    };
+
+    const token = await generateAuthHeader(newUser.username, newUser.password);
+
     const response = await api
       .post('/api/blogs')
+      .set('Authorization', token)
       .send(blogWithoutTitle)
       .expect(400);
   });
@@ -178,8 +232,16 @@ describe('when adding a new blog', () => {
       url: 'not.valid.uri',
     };
 
+    const newUser = {
+      username: 'user',
+      password: 'password'
+    };
+
+    const token = await generateAuthHeader(newUser.username, newUser.password);
+
     const newBlog = await api
       .post('/api/blogs')
+      .set('Authorization', token)
       .send(blog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -190,11 +252,20 @@ describe('when adding a new blog', () => {
 
 describe('when deleting a blog', () => {
   test('responds with 204 with a valid id', async () => {
-    const blogsInStart = await api.get('/api/blogs');
-    const blogToDelete = blogsInStart.body[0];
+    // const blogToDelete = blogsInStart.body[0];
+    // console.log(blogToDelete);
+    const newUser = {
+      username: 'user',
+      password: 'password'
+    };
 
+    const token = await generateAuthHeader(newUser.username, newUser.password);
+
+    const blogId = await createTempBlog(token);
+    const blogsInStart = await api.get('/api/blogs');
     await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
+      .delete(`/api/blogs/${blogId}`)
+      .set('Authorization', token)
       .expect(204);
 
     const blogsAfter = await api.get('/api/blogs');
@@ -204,16 +275,40 @@ describe('when deleting a blog', () => {
 });
 
 describe('updating a blog', () => {
-  test('returns the updated blog with correct modifications', async () => {
-    const blogsInStart = await api.get('/api/blogs');
-    const blogToUpdate = blogsInStart.body[0];
+  beforeEach(async() => {
+    await Blog.deleteMany({});
+    await User.deleteMany({});
+    await api.post('/api/users').send({ username: 'user', name: 'User One', password: 'password' });
+  });
 
-    const updated = await api.put(`/api/blogs/${blogToUpdate.id}`)
-      .send({ ...blogToUpdate, likes: blogToUpdate.likes + 1 })
+  test('returns the updated blog with correct modifications', async () => {
+    // const blogToUpdate = blogsInStart.body[0];
+    const newBlog = { title: 'no title', author: 'no author', url: 'does.not.matter', likes: 1 };
+    const newUser = {
+      username: 'user',
+      password: 'password'
+    };
+
+    const token = await generateAuthHeader(newUser.username, newUser.password);
+
+    const createdBlog = await api
+      .post('/api/blogs')
+      .set('Authorization', token)
+      .send(newBlog);
+    // console.log('CREATED BLOG', createdBlog.body);
+
+    // const blogsInStart = await api.get('/api/blogs');
+    const id = createdBlog.body.id.toString();
+    const updatedBlog = { ...createdBlog.body, likes: createdBlog.body.likes + 1 };
+
+    const result = await api.put(`/api/blogs/${id}`)
+      .send(updatedBlog)
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
-    expect(updated.body.likes).toBe(blogToUpdate.likes + 1);
+    // console.log('RESULT' ,result);
+
+    expect(result.body.likes).toBe(newBlog.likes + 1);
   });
 });
 

@@ -3,6 +3,7 @@ const Blog = require('../models/blog');
 const jwt = require('jsonwebtoken');
 const logger = require('../utils/logger');
 const User = require('../models/user');
+const { userExtractor } = require('./middleware');
 
 blogRouter.get('/', async (request, response) => {
   try {
@@ -17,7 +18,7 @@ blogRouter.get('/', async (request, response) => {
   }
 });
 
-blogRouter.post('/', async (request, response, next) => {
+blogRouter.post('/', userExtractor, async (request, response, next) => {
   let data = request.body;
 
   try {
@@ -49,7 +50,7 @@ blogRouter.post('/', async (request, response, next) => {
   }
 });
 
-blogRouter.delete('/:id', async (request, response, next) => {
+blogRouter.delete('/:id', userExtractor, async (request, response, next) => {
 
   const blogId = request.params.id;
 
