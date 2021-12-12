@@ -51,7 +51,7 @@ const App = () => {
         setInfoType(null);
       }, 5000)
     }
-  }
+  };
 
   const addBlog = async (newBlog) => {
     try {
@@ -75,8 +75,8 @@ const App = () => {
         setInfoMessage(null);
         setInfoType(null);
       }, 5000)
-    }
-  }
+    };
+  };
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -105,13 +105,31 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.clear();
     window.location.reload();
-  }
+  };
 
   const blogForm = () => (
     <Togglable buttonLabel='New Blog' ref={blogFormRef}>
       <NewBlogForm handleSubmit={addBlog}/>
     </Togglable>
-  )
+  );
+
+  const updateBlog = async (newBlog) => {
+    try {
+      const updatedBlog = await blogService.update(newBlog);
+      console.log('returned blog: ', updatedBlog);
+
+      setBlogs(blogs.map(blog => blog.id !== newBlog.id ? blog : updatedBlog));
+      
+    } catch (exception) {
+      console.log(exception);
+      setInfoMessage('Error updating blog.');
+      setInfoType('error');
+      setTimeout(() => {
+        setInfoMessage(null);
+        setInfoType(null);
+      }, 5000)
+    };
+  };
 
   return (
     <div>
@@ -133,7 +151,7 @@ const App = () => {
 
           <br />
 
-          {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+          {blogs.map(blog => <Blog key={blog.id} blog={blog} handleUpdate={updateBlog} />)}
         </div>
       }
     </div>

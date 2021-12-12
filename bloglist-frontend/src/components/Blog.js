@@ -1,7 +1,14 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleUpdate }) => {
   const [displayMode, setDisplayMode] = useState('short');
+  const [currentLikes, setCurrentLikes] = useState(blog.likes);
+
+  const handleLike = () => {
+    const updatedBlog = {...blog, likes: blog.likes + 1, user: blog.user.id};
+    handleUpdate(updatedBlog);
+    setCurrentLikes(currentLikes + 1);
+  }
   
   if (displayMode === 'short') {
     return (
@@ -20,8 +27,8 @@ const Blog = ({ blog }) => {
       
       <p>URL: { blog.url }</p>
       
-      <p className='inline-p'>Likes: { blog.likes }</p>
-      <button>like</button>
+      <p className='inline-p'>Likes: { currentLikes }</p>
+      <button onClick={ handleLike }>like</button>
       
       <p>Added by: { blog.user.name }</p>
     </div>
