@@ -3,13 +3,15 @@ import Blog from './components/Blog';
 import blogService from './services/blogs';
 import loginService from './services/login';
 import './App.css';
+import Info from './components/Info';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [infoMessage, setInfoMessage] = useState('');
+  const [infoType, setInfoType] = useState('');
   const [newBlogTitle, setNewBlogTitle] = useState('');
   const [newBlogAuthor, setNewBlogAuthor] = useState('');
   const [newBlogUrl, setNewBlogUrl] = useState('');
@@ -31,7 +33,6 @@ const App = () => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    // console.log('Logging in with credentials: ', username, password);
 
     try {
       const user = await loginService.login({ username, password });
@@ -42,16 +43,17 @@ const App = () => {
       setPassword('');
 
     } catch (exception) {
-      setErrorMessage('Wrong username or password.');
+      setInfoMessage('Wrong username or password.');
+      setInfoType('error');
       setTimeout(() => {
-        setErrorMessage(null);
+        setInfoMessage(null);
+        setInfoType(null);
       }, 5000)
     }
   }
 
   const handleNewBlog = async (event) => {
     event.preventDefault();
-    // console.log('Creating new blog: ', newBlogTitle, newBlogAuthor, newBlogUrl);
     try {
       const savedBlog = await blogService.create({ 
         title: newBlogTitle, 
@@ -59,14 +61,24 @@ const App = () => {
         url: newBlogUrl 
       });
       setBlogs(blogs.concat(savedBlog));
+
+      setInfoMessage(`Blog "${savedBlog.title}" saved successfully`);
+      setInfoType('success');
+      setTimeout(() => {
+        setInfoMessage(null);
+        setInfoType(null);
+      }, 5000);
+      
       setNewBlogTitle('');
       setNewBlogAuthor('');
       setNewBlogUrl('');
 
     } catch (exception) {
-      setErrorMessage('Error saving new blog');
+      setInfoMessage('Error saving new blog');
+      setInfoType('error');
       setTimeout(() => {
-        setErrorMessage(null);
+        setInfoMessage(null);
+        setInfoType(null);
       }, 5000)
     }
   }
@@ -133,15 +145,25 @@ const App = () => {
 
   return (
     <div>
-      <h2>blogs</h2>
-      {user === null ? 
-        loginForm() 
+      <h1>Blogs</h1>
+      {user === null ?
+        <div>
+          <Info message={infoMessage} type={infoType}/>
+          {loginForm()} 
+        </div>
         :
         <div>
+          <div>
+            <Info message={infoMessage} type={infoType}/>
+          </div>
           <p className='logged-in-user'>{user.name} logged in</p>
           <button onClick={handleLogout}>logout</button>
 
-          {newBlogForm()}
+          <div>
+            <h2>Create new</h2>
+            {newBlogForm()}
+          </div>
+          <br />
 
           {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
         </div>

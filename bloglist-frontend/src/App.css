@@ -1,3 +1,20 @@
 .logged-in-user {
   display: inline-block;
 }
+
+.info {
+  margin: 10px;
+  padding: 5px;
+  background-color: lightgray;
+  display: none;
+}
+
+.error {
+  border: 2px solid red;
+  display: block;
+}
+
+.success {
+  border: 2px solid green;
+  display: block;
+}
