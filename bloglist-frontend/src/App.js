@@ -10,6 +10,9 @@ const App = () => {
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [newBlogTitle, setNewBlogTitle] = useState('');
+  const [newBlogAuthor, setNewBlogAuthor] = useState('');
+  const [newBlogUrl, setNewBlogUrl] = useState('');
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -46,6 +49,28 @@ const App = () => {
     }
   }
 
+  const handleNewBlog = async (event) => {
+    event.preventDefault();
+    // console.log('Creating new blog: ', newBlogTitle, newBlogAuthor, newBlogUrl);
+    try {
+      const savedBlog = await blogService.create({ 
+        title: newBlogTitle, 
+        author: newBlogAuthor, 
+        url: newBlogUrl 
+      });
+      setBlogs(blogs.concat(savedBlog));
+      setNewBlogTitle('');
+      setNewBlogAuthor('');
+      setNewBlogUrl('');
+
+    } catch (exception) {
+      setErrorMessage('Error saving new blog');
+      setTimeout(() => {
+        setErrorMessage(null);
+      }, 5000)
+    }
+  }
+
   const loginForm = () => (
     <form onSubmit={handleLogin}>
       <div>
@@ -70,6 +95,37 @@ const App = () => {
     </form>
   );
 
+  const newBlogForm = () => (
+    <form onSubmit={handleNewBlog}>
+      <div>
+        <label>Title</label>
+        <input
+          type='text'
+          value={newBlogTitle}
+          onChange={({target}) => setNewBlogTitle(target.value)}>
+        </input>
+      </div>
+
+      <div>
+        <label>Author</label>
+        <input
+          type='text'
+          value={newBlogAuthor}
+          onChange={({target}) => setNewBlogAuthor(target.value)}>
+        </input>
+        </div>
+      <div>
+        <label>Url</label>
+        <input
+          type='text'
+          value={newBlogUrl}
+          onChange={({target}) => setNewBlogUrl(target.value)}>
+        </input>
+      </div>
+      <button type='submit'>Save</button>
+    </form>
+  );
+
   const handleLogout = () => {
     window.localStorage.clear();
     window.location.reload();
@@ -84,6 +140,9 @@ const App = () => {
         <div>
           <p className='logged-in-user'>{user.name} logged in</p>
           <button onClick={handleLogout}>logout</button>
+
+          {newBlogForm()}
+
           {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
         </div>
       }
