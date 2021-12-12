@@ -18,3 +18,17 @@
   border: 2px solid green;
   display: block;
 }
+
+.blog {
+  border: 2px solid gray;
+  padding: 3px;
+  margin: 2px;
+}
+
+.blog p {
+  margin: 5px;
+}
+
+.inline-p {
+  display: inline-block;
+}
