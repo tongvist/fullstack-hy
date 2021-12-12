@@ -32,3 +32,7 @@
 .inline-p {
   display: inline-block;
 }
+
+.delete-blog-btn {
+  background-color: red;
+}

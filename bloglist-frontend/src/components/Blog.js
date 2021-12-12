@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-const Blog = ({ blog, handleUpdate }) => {
+const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
   const [displayMode, setDisplayMode] = useState('short');
   const [currentLikes, setCurrentLikes] = useState(blog.likes);
 
@@ -8,6 +8,10 @@ const Blog = ({ blog, handleUpdate }) => {
     const updatedBlog = {...blog, likes: blog.likes + 1, user: blog.user.id};
     handleUpdate(updatedBlog);
     setCurrentLikes(currentLikes + 1);
+  }
+
+  const deleteBlog = () => {
+    handleDelete(blog);
   }
   
   if (displayMode === 'short') {
@@ -31,6 +35,7 @@ const Blog = ({ blog, handleUpdate }) => {
       <button onClick={ handleLike }>like</button>
       
       <p>Added by: { blog.user.name }</p>
+      <p>{ blog.user.name === user ? <button className='delete-blog-btn' onClick={deleteBlog}>delete</button> : null }</p>
     </div>
   );
 };
