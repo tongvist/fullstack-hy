@@ -17,14 +17,14 @@ const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
   if (displayMode === 'short') {
     return (
       <div className='blog'>
-        <p className='inline-p'>"{ blog.title }" by { blog.author }</p>
+        <p className='inline-p'>&quot;{ blog.title }&quot; by { blog.author }</p>
         <button onClick={ () => setDisplayMode('full') }>View</button>
       </div>
     );}
 
   return (
     <div className='blog'>
-      <p className='inline-p'>"{ blog.title }"</p>
+      <p className='inline-p'>&quot;{ blog.title }&quot;</p>
       <button onClick={ () => setDisplayMode('short') }>Hide</button>
 
       <p>Author: { blog.author }</p>
