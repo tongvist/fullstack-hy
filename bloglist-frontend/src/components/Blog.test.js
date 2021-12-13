@@ -5,6 +5,8 @@ import Blog from './Blog';
 
 describe('<Blog />', () => {
   let component;
+  const mockUpdate = jest.fn();
+  const mockDelete = jest.fn();
 
   beforeEach(() => {
     const blog = {
@@ -17,13 +19,8 @@ describe('<Blog />', () => {
       }
     };
 
-    const mockUpdate = jest.fn();
-    const mockDelete = jest.fn();
+    component = render(<Blog blog={ blog } handleUpdate={ mockUpdate } handleDelete={ mockDelete } />);
 
-    const handleUpdate = mockUpdate;
-    const handleDelete = mockDelete;
-
-    component = render(<Blog blog={ blog } handleUpdate={ handleUpdate } handleDelete={ handleDelete } />);
   });
 
   test('renders only title and author by default', () => {
@@ -41,5 +38,18 @@ describe('<Blog />', () => {
     const expandedBlog = component.container.querySelector('.blog');
     expect(expandedBlog).toHaveTextContent('test.url');
     expect(expandedBlog).toHaveTextContent(/Likes: 2/);
+  });
+
+  test('pressing the like-button calls the event handler', () => {
+    const viewButton = component.getByText('View');
+    fireEvent.click(viewButton);
+
+    const likeButton = component.getByText('like');
+    fireEvent.click(likeButton);
+    fireEvent.click(likeButton);
+
+    const likesParagraph = component.getByText(/Likes:/);
+    expect(likesParagraph).toHaveTextContent(/Likes: 4/);
+    expect(mockUpdate.mock.calls).toHaveLength(2);
   });
 });
