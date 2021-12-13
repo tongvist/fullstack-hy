@@ -1,31 +1,45 @@
 import React from 'react';
 import '@testing-library/jest-dom/extend-expect';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import Blog from './Blog';
 
-test('renders only title and author by default', () => {
-  const blog = {
-    title: 'Test Blog',
-    author: 'Test Author',
-    url: 'test.url'
-  };
+describe('<Blog />', () => {
+  let component;
 
-  const mockUpdate = jest.fn();
-  const mockDelete = jest.fn();
+  beforeEach(() => {
+    const blog = {
+      title: 'Test Blog',
+      author: 'Test Author',
+      url: 'test.url',
+      likes: 2,
+      user: {
+        name: 'test user'
+      }
+    };
 
-  const user = 'test user';
-  const handleUpdate = mockUpdate;
-  const handleDelete = mockDelete;
+    const mockUpdate = jest.fn();
+    const mockDelete = jest.fn();
 
-  const component = render(
-    <Blog blog={ blog }
-      user={ user }
-      handleUpdate={ handleUpdate }
-      handleDelete={ handleDelete }
-    />
-  );
+    const handleUpdate = mockUpdate;
+    const handleDelete = mockDelete;
 
-  expect(component.container).toHaveTextContent('Test Blog');
-  expect(component.container).toHaveTextContent('Test Author');
-  expect(component.container).not.toHaveTextContent('likes');
+    component = render(<Blog blog={ blog } handleUpdate={ handleUpdate } handleDelete={ handleDelete } />);
+  });
+
+  test('renders only title and author by default', () => {
+
+
+    expect(component.container).toHaveTextContent('Test Blog');
+    expect(component.container).toHaveTextContent('Test Author');
+    expect(component.container).not.toHaveTextContent(/Likes:/);
+  });
+
+  test('displays also the url and likes if the blog view has been expanded', () => {
+    const viewButton = component.getByText('View');
+    fireEvent.click(viewButton);
+
+    const expandedBlog = component.container.querySelector('.blog');
+    expect(expandedBlog).toHaveTextContent('test.url');
+    expect(expandedBlog).toHaveTextContent(/Likes: 2/);
+  });
 });
