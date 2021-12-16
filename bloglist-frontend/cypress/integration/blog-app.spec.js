@@ -36,4 +36,22 @@ describe('Blog-app', function() {
         .and('have.css', 'border', '2px solid rgb(255, 0, 0)');
     })
   });
+
+  describe('When logged in', function() {
+    beforeEach(function() {
+      cy.login({ username: 'cypress-user', password: 'password' });
+    });
+
+    it('A new blog can be created', function() {
+      cy.contains('New Blog').click();
+      
+      cy.get('#new-blog-title').type('New Blog from Cypress!');
+      cy.get('#new-blog-author').type('Author of the Blog');
+      cy.get('#new-blog-url').type('does-not.matter/blog');
+      
+      cy.contains('Save').click();
+      
+      cy.contains('New Blog from Cypress!');
+    });
+  });
 });
