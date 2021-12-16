@@ -26,12 +26,14 @@ describe('Blog-app', function() {
       cy.contains('logged in');
     });
 
-    it('fails with wrong credentials', function() {
+    it('fails with wrong credentials and shows an error message', function() {
       cy.get('#username').type('cypress-user');
       cy.get('#password').type('wrong');
       cy.get('#login').click();
 
-      cy.contains('Wrong username or password.');
+      cy.get('.error')
+        .should('contain', 'Wrong username or password.')
+        .and('have.css', 'border', '2px solid rgb(255, 0, 0)');
     })
   });
 });
