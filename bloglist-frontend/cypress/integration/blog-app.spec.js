@@ -42,7 +42,7 @@ describe('Blog-app', function() {
       cy.login({ username: 'cypress-user', password: 'password' });
     });
 
-    it.only('A new blog can be created', function() {
+    it('A new blog can be created', function() {
       cy.contains('New Blog').click();
       
       cy.get('#new-blog-title').type('New Blog from Cypress!');
@@ -50,16 +50,19 @@ describe('Blog-app', function() {
       cy.get('#new-blog-url').type('does-not.matter/blog');
       
       cy.contains('Save').click();
-      cy.contains('New Blog').click();
-      
-      cy.get('#new-blog-title').type('New Blog II from Cypress!');
-      cy.get('#new-blog-author').type('Author of the Blog');
-      cy.get('#new-blog-url').type('does-not.matter/blog');
-      
-      cy.contains('Save').click();
       
       cy.get('.blog-list').contains('New Blog from Cypress!');
-      cy.get('.blog-list').contains('New Blog II from Cypress!');
+    });
+
+    it.only('A blog can be liked', function() {
+      cy.createBlog({ 
+        title: 'A Blog bypassing UI',
+        author: 'Blog Author',
+        url: 'url-to-the.blog'
+       });
+
+      cy.contains('View').click();
+      cy.get('.blog').contains('like').click();
     });
   });
 });
