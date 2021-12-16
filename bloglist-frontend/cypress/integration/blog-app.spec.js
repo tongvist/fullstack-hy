@@ -54,7 +54,7 @@ describe('Blog-app', function() {
       cy.get('.blog-list').contains('New Blog from Cypress!');
     });
 
-    it.only('A blog can be liked', function() {
+    it('A blog can be liked', function() {
       cy.createBlog({ 
         title: 'A Blog bypassing UI',
         author: 'Blog Author',
@@ -63,6 +63,42 @@ describe('Blog-app', function() {
 
       cy.contains('View').click();
       cy.get('.blog').contains('like').click();
+    });
+
+    it.only('A blog can be deleted only by the user who added it', function() {
+      cy.createBlog({ 
+        title: 'A Blog bypassing UI',
+        author: 'Blog Author',
+        url: 'url-to-the.blog'
+       });
+      
+      cy.get('.blog-list').contains('A Blog bypassing UI').parent().contains('View').click();
+      cy.contains('delete').click();
+
+      cy.createBlog({ 
+      title: 'A Blog bypassing UI',
+      author: 'Blog Author',
+      url: 'url-to-the.blog'
+      });
+
+      cy.createBlog({ 
+      title: 'A Blog 2',
+      author: 'Blog Author II',
+      url: 'url-to-the.blog/2'
+      });
+
+      cy.contains('logout').click();
+      
+      cy.createUser({
+        name: 'Not the Same',
+        username: 'should_not_work',
+        password: 'password'
+      });
+
+      cy.login({ username: 'should_not_work', password: 'password' });
+
+      cy.get('.blog-list').contains('A Blog 2').parent().contains('View').click();
+      cy.get('.blog-list').contains('A Blog 2').parent().get('.delete-blog-btn').should('not.exist');
     });
   });
 });
