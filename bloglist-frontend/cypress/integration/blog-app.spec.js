@@ -101,4 +101,29 @@ describe('Blog-app', function() {
       cy.get('.blog-list').contains('A Blog 2').parent().get('.delete-blog-btn').should('not.exist');
     });
   });
+
+  it.only('The blogs are ordered by number of likes, starting from the most liked one', function() {
+    cy.login({ username: 'cypress-user', password: 'password' });
+
+    cy.createBlog({
+      title: 'A Blog bypassing UI',
+      author: 'Blog Author',
+      url: 'url-to-the.blog'
+    });
+
+    cy.createBlog({
+      title: 'A Blog 2',
+      author: 'Blog Author II',
+      url: 'url-to-the.blog/2'
+    });
+
+    cy.get('.blog-list').contains('A Blog 2').parent().contains('View').click();
+    cy.get('.blog-list').contains('A Blog 2').parent().contains('like').as('like-btn');
+    cy.get('@like-btn').click();
+    cy.get('@like-btn').click();
+
+    cy.visit('http://localhost:3000');
+
+    cy.get('.blog').first().should('contain', 'A Blog 2');
+  });
 });
