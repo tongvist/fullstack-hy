@@ -13,4 +13,12 @@ const createNew = async (content) => {
   return response.data;
 }
 
-export default { getAll, createNew };
+const saveVote = async (id, content, votesBefore) => {
+  const endpoint = `${baseUrl}/${id}`;
+  const data = { content, votes: votesBefore + 1}
+  
+  const response = await axios.put(endpoint, data);
+  return response.data.votes;
+}
+
+export default { getAll, createNew, saveVote };
