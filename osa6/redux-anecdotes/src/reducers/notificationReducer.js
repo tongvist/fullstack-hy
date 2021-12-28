@@ -1,21 +1,19 @@
-const initialState = null;
-
 export const clearNotification = () => {
   return {
     type: 'CLEAR_NOTIFICATION'
   }
 }
 
-const notificationReducer = (state = initialState, action) => {
+const notificationReducer = (state = '', action) => {
   switch (action.type) {
     case 'VOTE':
       return `You voted for '${action.content}'`;
     case 'CLEAR_NOTIFICATION':
-      return null;
+      return '';
     case 'NEW_ANECDOTE':
       return `You created '${action.content}'`;
     default:
-      return initialState;
+      return state;
   }
 }
 

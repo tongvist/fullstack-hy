@@ -1,5 +1,3 @@
-const initialState = '';
-
 export const createChangeAction = (filter) => {
   return {
     type: 'CHANGE',
@@ -7,12 +5,12 @@ export const createChangeAction = (filter) => {
   }
 }
 
-const filterReducer = (state, action) => {
+const filterReducer = (state = '', action) => {
   switch (action.type) {
     case 'CHANGE':
       return action.filter;
     default:
-      return initialState;
+      return state;
   };
 };
 
