@@ -1,24 +1,29 @@
+import anecdoteService from '../services/anecdotes';
+
 export const vote = (id, content) => {
   return {
     type: 'VOTE',
     id,
     content
-  }
-}
+  };
+};
 
 export const createAnecdote = (data) => {
   return {
     type: 'NEW_ANECDOTE',
     data
-  }
-}
+  };
+};
 
-export const initializeAnecdotes = (anecdotes) => {
-  return {
-    type: 'INIT_ANECDOTES',
-    data: anecdotes
-  }
-}
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    const anecdotes = await anecdoteService.getAll();
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      data: anecdotes
+    });
+  };
+};
 
 const anecdoteReducer = (state = [], action) => {
   switch (action.type) {
@@ -29,8 +34,8 @@ const anecdoteReducer = (state = [], action) => {
     case 'INIT_ANECDOTES':
       return action.data;
     default:
-      return state
-  }
-}
+      return state;
+  };
+};
 
 export default anecdoteReducer;
