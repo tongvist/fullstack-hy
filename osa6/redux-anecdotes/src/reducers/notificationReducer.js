@@ -1,11 +1,18 @@
+let timeoutId;
+
 export const setNotification = (text, clearDelay) => {
+  if (typeof timeoutId === 'number') {
+    clearTimeout(timeoutId);
+    timeoutId = undefined;
+  }
+  
   return async dispatch => {
     dispatch({
       type: 'SET_NOTIFICATION',
       text
     });
     
-    setTimeout(() => {
+    timeoutId = setTimeout(() => {
       dispatch({
         type: 'CLEAR_NOTIFICATION'
       });
