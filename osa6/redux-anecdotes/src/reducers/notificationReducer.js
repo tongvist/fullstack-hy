@@ -11,7 +11,7 @@ const notificationReducer = (state = '', action) => {
     case 'CLEAR_NOTIFICATION':
       return '';
     case 'NEW_ANECDOTE':
-      return `You created '${action.content}'`;
+      return `You created '${action.data.content}'`;
     default:
       return state;
   }
