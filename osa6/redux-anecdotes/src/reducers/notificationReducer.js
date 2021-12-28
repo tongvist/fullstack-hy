@@ -1,20 +1,27 @@
-export const clearNotification = () => {
-  return {
-    type: 'CLEAR_NOTIFICATION'
-  }
-}
+export const setNotification = (text, clearDelay) => {
+  return async dispatch => {
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      text
+    });
+    
+    setTimeout(() => {
+      dispatch({
+        type: 'CLEAR_NOTIFICATION'
+      });
+    }, clearDelay * 1000)
+  };
+};
 
 const notificationReducer = (state = '', action) => {
   switch (action.type) {
-    case 'VOTE':
-      return `You voted for '${action.content}'`;
+    case 'SET_NOTIFICATION':
+      return `${action.text}`;
     case 'CLEAR_NOTIFICATION':
       return '';
-    case 'NEW_ANECDOTE':
-      return `You created '${action.data.content}'`;
     default:
       return state;
-  }
-}
+  };
+};
 
 export default notificationReducer;
