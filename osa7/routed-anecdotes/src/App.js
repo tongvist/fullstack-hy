@@ -70,6 +70,12 @@ const CreateNew = (props) => {
     setSubmit(true);
   }
 
+  const reset = () => {
+    content.reset()
+    author.reset()
+    info.reset()
+  }
+
   if (submit) {
     return <Redirect to='/'></Redirect>
   }
@@ -91,6 +97,7 @@ const CreateNew = (props) => {
           <input { ...info } />
         </div>
         <button>create</button>
+        <button type='button' onClick={ reset }>reset</button>
       </form>
     </div>
   )
