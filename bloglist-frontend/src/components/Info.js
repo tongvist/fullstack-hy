@@ -1,19 +1,15 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import { useSelector } from 'react-redux';
 
-const Info = ({ message, type }) => {
-  const classString = `info ${type}`;
+const Info = () => {
+  const store = useSelector(state => state.info);
+  const classString = `info ${store.infoType}`;
 
   return (
     <div className={classString}>
-      {message}
+      {store.text}
     </div>
   );
-};
-
-Info.propTypes = {
-  message: PropTypes.string.isRequired,
-  type: PropTypes.string.isRequired
 };
 
 export default Info;

@@ -6,16 +6,17 @@ import './App.css';
 import Info from './components/Info';
 import Togglable from './components/Togglable';
 import NewBlogForm from './components/NewBlogForm';
+import { setInfoAction, resetInfoAction } from './reducers/reducers';
+import { useDispatch } from 'react-redux';
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
-  const [infoMessage, setInfoMessage] = useState('');
-  const [infoType, setInfoType] = useState('');
 
   const blogFormRef = useRef();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -46,11 +47,9 @@ const App = () => {
       setPassword('');
 
     } catch (exception) {
-      setInfoMessage('Wrong username or password.');
-      setInfoType('error');
+      dispatch(setInfoAction('Wrong username or password.', 'error'));
       setTimeout(() => {
-        setInfoMessage(null);
-        setInfoType(null);
+        dispatch(resetInfoAction());
       }, 5000);
     }
   };
@@ -62,20 +61,17 @@ const App = () => {
 
       blogFormRef.current.toggleVisibility();
 
-      setInfoMessage(`Blog "${savedBlog.title}" saved successfully`);
-      setInfoType('success');
+      dispatch(setInfoAction(`Blog "${savedBlog.title}" saved successfully`, 'success'));
 
       setTimeout(() => {
-        setInfoMessage(null);
-        setInfoType(null);
+
+        dispatch(resetInfoAction());
       }, 5000);
     } catch (exception) {
-      setInfoMessage('Error saving new blog');
-      setInfoType('error');
+      dispatch(setInfoAction('Error saving new blog', 'error'));
 
       setTimeout(() => {
-        setInfoMessage(null);
-        setInfoType(null);
+        dispatch(resetInfoAction());
       }, 5000);
     }
   };
@@ -124,11 +120,9 @@ const App = () => {
       setBlogs(blogs.map(blog => blog.id !== newBlog.id ? blog : updatedBlog));
 
     } catch (exception) {
-      setInfoMessage('Error updating blog.');
-      setInfoType('error');
+      dispatch(setInfoAction('Error updating blog.', 'error'));
       setTimeout(() => {
-        setInfoMessage(null);
-        setInfoType(null);
+        dispatch(resetInfoAction());
       }, 5000);
     }
   };
@@ -142,22 +136,17 @@ const App = () => {
     try {
       await blogService.deleteBlog(blogToDelete.id);
       setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id));
-
-      setInfoMessage('Blog deleted');
-      setInfoType('success');
+      dispatch(setInfoAction('Blog deleted', 'success'));
 
       setTimeout(() => {
-        setInfoMessage(null);
-        setInfoType(null);
+        dispatch(resetInfoAction());
       }, 5000);
 
     } catch (exception) {
-      setInfoMessage('Error deleting blog.');
-      setInfoType('error');
+      dispatch(setInfoAction('Error deleting blog.', 'error'));
 
       setTimeout(() => {
-        setInfoMessage(null);
-        setInfoType(null);
+        dispatch(resetInfoAction());
       }, 5000);
     }
   };
@@ -167,13 +156,13 @@ const App = () => {
       <h1>Blogs</h1>
       {user === null ?
         <div>
-          <Info message={infoMessage} type={infoType}/>
+          <Info />
           { loginForm() }
         </div>
         :
         <div>
           <div>
-            <Info message={infoMessage} type={infoType}/>
+            <Info />
           </div>
           <p className='logged-in-user'>{user.name} logged in</p>
           <button onClick={handleLogout}>logout</button>
