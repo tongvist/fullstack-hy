@@ -8,6 +8,8 @@ import Togglable from './components/Togglable';
 import NewBlogForm from './components/NewBlogForm';
 import { setInfoAction, resetInfoAction, initializeBlogs, addBlogAction, updateBlogAction, deleteBlogAction, setUserAction } from './reducers/reducers';
 import { useDispatch, useSelector } from 'react-redux';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import Users from './components/Users';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -148,37 +150,46 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>Blogs</h1>
-      {user === null ?
-        <div>
-          <Info />
-          { loginForm() }
-        </div>
-        :
-        <div>
+    <Router>
+      <div>
+        <h1>Blogs</h1>
+        {user === null ?
           <div>
             <Info />
+            { loginForm() }
           </div>
-          <p className='logged-in-user'>{user.name} logged in</p>
-          <button onClick={handleLogout}>logout</button>
+          :
+          <div>
+            <div>
+              <Info />
+            </div>
+            <p className='logged-in-user'>{user.name} logged in</p>
+            <button onClick={handleLogout}>logout</button>
 
-          { blogForm() }
+            { blogForm() }
 
-          <br />
+            <br />
 
-          <div className='blog-list'>
-            {blogs.map(blog => <Blog
-              key={blog.id}
-              blog={blog}
-              user={user.name}
-              handleUpdate={updateBlog}
-              handleDelete={deleteBlog}
-            />)}
+            <Switch>
+              <Route path='/users'>
+                <Users />
+              </Route>
+              <Route path='/'>
+                <div className='blog-list'>
+                  {blogs.map(blog => <Blog
+                    key={blog.id}
+                    blog={blog}
+                    user={user.name}
+                    handleUpdate={updateBlog}
+                    handleDelete={deleteBlog}
+                  />)}
+                </div>
+              </Route>
+            </Switch>
           </div>
-        </div>
-      }
-    </div>
+        }
+      </div>
+    </Router>
   );
 };
 
