@@ -8,7 +8,7 @@ import Togglable from './components/Togglable';
 import NewBlogForm from './components/NewBlogForm';
 import { setInfoAction, resetInfoAction, initializeBlogs, addBlogAction, updateBlogAction, deleteBlogAction, setUserAction } from './reducers/reducers';
 import { useDispatch, useSelector } from 'react-redux';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Users from './components/Users';
 import User from './components/User';
 
@@ -167,7 +167,6 @@ const App = () => {
             <p className='logged-in-user'>{user.name} logged in</p>
             <button onClick={handleLogout}>logout</button>
 
-            { blogForm() }
 
             <br />
 
@@ -178,15 +177,20 @@ const App = () => {
               <Route path='/users'>
                 <Users />
               </Route>
+              <Route path='/blogs/:id'>
+                <Blog handleUpdate={ updateBlog } handleDelete={ deleteBlog }/>
+              </Route>
               <Route path='/'>
+                { blogForm() }
                 <div className='blog-list'>
-                  {blogs.map(blog => <Blog
-                    key={blog.id}
-                    blog={blog}
-                    user={user.name}
-                    handleUpdate={updateBlog}
-                    handleDelete={deleteBlog}
-                  />)}
+                  {blogs.map(blog => {
+                    return (
+                      <div key={blog.id} className='blog'>
+                        <Link to={`/blogs/${blog.id}`}>
+                          <p className='inline-p'>&quot;{ blog.title }&quot; by { blog.author }</p>
+                        </Link>
+                      </div>);
+                  })}
                 </div>
               </Route>
             </Switch>

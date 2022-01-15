@@ -1,38 +1,29 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 
-const Blog = ({ blog, user, handleUpdate, handleDelete }) => {
-  const [displayMode, setDisplayMode] = useState('short');
-  const [currentLikes, setCurrentLikes] = useState(blog.likes);
+const Blog = ({ handleUpdate, handleDelete }) => {
+  const id = useParams().id;
+  const blog = useSelector(state => state.blogs.find(b => b.id === id));
+  const user = useSelector(state => state.user);
 
   const handleLike = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
     handleUpdate(updatedBlog);
-    setCurrentLikes(currentLikes + 1);
   };
 
   const deleteBlog = () => {
     handleDelete(blog);
   };
 
-  if (displayMode === 'short') {
-    return (
-      <div className='blog'>
-        <p className='inline-p'>&quot;{ blog.title }&quot; by { blog.author }</p>
-        <button onClick={ () => setDisplayMode('full') }>View</button>
-      </div>
-    );}
-
   return (
     <div className='blog'>
-      <p className='inline-p'>&quot;{ blog.title }&quot;</p>
-      <button onClick={ () => setDisplayMode('short') }>Hide</button>
+      <h2 className='inline-p'>{ blog.title } by {blog.author}</h2>
 
-      <p>Author: { blog.author }</p>
+      <p><a href={blog.url}>{ blog.url }</a></p>
 
-      <p>URL: { blog.url }</p>
-
-      <p className='inline-p'>Likes: { currentLikes }</p>
-      <button onClick={ handleLike }>like</button>
+      <p className='inline-p'>Likes: { blog.likes }</p>
+      <button onClick={ handleLike }>Like</button>
 
       <p>Added by: { blog.user.name }</p>
       <p>{ blog.user.name === user ? <button className='delete-blog-btn' onClick={deleteBlog}>delete</button> : null }</p>
