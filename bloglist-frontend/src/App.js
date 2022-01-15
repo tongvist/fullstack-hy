@@ -10,6 +10,7 @@ import { setInfoAction, resetInfoAction, initializeBlogs, addBlogAction, updateB
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Users from './components/Users';
+import User from './components/User';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -171,6 +172,9 @@ const App = () => {
             <br />
 
             <Switch>
+              <Route path='/users/:id'>
+                <User />
+              </Route>
               <Route path='/users'>
                 <Users />
               </Route>

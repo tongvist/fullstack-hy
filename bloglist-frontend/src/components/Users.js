@@ -1,5 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 export const Users = () => {
   const blogs = useSelector(state => state.blogs);
@@ -12,14 +13,14 @@ export const Users = () => {
       if (!userInList) {
         result.push({
           name: blog.user.name,
-          blogs: 1
+          blogs: 1,
+          id: blog.user.id
         });
       } else {
         result = result.map(u => u.name !== blog.user.name ? u : { ...u, blogs: u.blogs + 1 });
       }
     });
 
-    console.log('result', result);
     return result;
   };
 
@@ -27,20 +28,27 @@ export const Users = () => {
     <div>
       <h1>Users</h1>
       <table>
-        <tr>
-          <td></td>
-          <th>Blogs created</th>
-        </tr>
-        {
-          getUserData().map(user => {
-            return (
-              <tr key={user.name}>
-                <td>{user.name}</td>
-                <td>{user.blogs}</td>
-              </tr>
-            );
-          })
-        }
+        <tbody>
+          <tr>
+            <td></td>
+            <th>Blogs created</th>
+          </tr>
+          {
+            getUserData().map(user => {
+              const url = `/users/${user.id}`;
+              return (
+                <tr key={user.name}>
+                  <td>
+                    <Link to={ url }>
+                      {user.name}
+                    </Link>
+                  </td>
+                  <td>{user.blogs}</td>
+                </tr>
+              );
+            })
+          }
+        </tbody>
       </table>
     </div>
   );
