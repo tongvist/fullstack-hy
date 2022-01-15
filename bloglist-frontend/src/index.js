@@ -8,7 +8,8 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 
 const reducer = combineReducers({
   info: reducers.infoReducer,
-  blogs: reducers.blogReducer
+  blogs: reducers.blogReducer,
+  user: reducers.userReducer
 });
 
 const store = createStore(reducer, composeWithDevTools());

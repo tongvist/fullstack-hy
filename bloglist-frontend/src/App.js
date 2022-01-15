@@ -6,17 +6,17 @@ import './App.css';
 import Info from './components/Info';
 import Togglable from './components/Togglable';
 import NewBlogForm from './components/NewBlogForm';
-import { setInfoAction, resetInfoAction, initializeBlogs, addBlogAction, updateBlogAction, deleteBlogAction } from './reducers/reducers';
+import { setInfoAction, resetInfoAction, initializeBlogs, addBlogAction, updateBlogAction, deleteBlogAction, setUserAction } from './reducers/reducers';
 import { useDispatch, useSelector } from 'react-redux';
 
 const App = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [user, setUser] = useState(null);
 
   const blogFormRef = useRef();
   const dispatch = useDispatch();
   const blogs = useSelector(state => state.blogs);
+  const user = useSelector(state => state.user);
 
   useEffect(() => {
     blogService.getAll()
@@ -30,7 +30,7 @@ const App = () => {
     const loggedInUserJSON = window.localStorage.getItem('loggedInUser');
     if (loggedInUserJSON) {
       const user = JSON.parse(loggedInUserJSON);
-      setUser(user);
+      dispatch(setUserAction(user));
       blogService.setToken(user.token);
     }
   }, []);
@@ -42,7 +42,7 @@ const App = () => {
       const user = await loginService.login({ username, password });
       window.localStorage.setItem('loggedInUser', JSON.stringify(user));
       blogService.setToken(user.token);
-      setUser(user);
+      dispatch(setUserAction(user));
       setUsername('');
       setPassword('');
 

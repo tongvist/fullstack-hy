@@ -47,6 +47,13 @@ export const deleteBlogAction = (id) => {
   };
 };
 
+export const setUserAction = (data) => {
+  return {
+    type: 'SET_USER',
+    data
+  };
+};
+
 const infoReducer = (state = initialStateInfo, action) => {
   switch (action.type) {
   case 'SET_INFO':
@@ -73,6 +80,15 @@ const blogReducer = (state = initialStateBlogs, action) => {
   }
 };
 
-const reducers = { infoReducer, blogReducer };
+export const userReducer = (state = null, action) => {
+  switch (action.type) {
+  case 'SET_USER':
+    return action.data;
+  default:
+    return state;
+  }
+};
+
+const reducers = { infoReducer, blogReducer, userReducer };
 
 export default reducers;
