@@ -6,24 +6,24 @@ import './App.css';
 import Info from './components/Info';
 import Togglable from './components/Togglable';
 import NewBlogForm from './components/NewBlogForm';
-import { setInfoAction, resetInfoAction } from './reducers/reducers';
-import { useDispatch } from 'react-redux';
+import { setInfoAction, resetInfoAction, initializeBlogs, addBlogAction, updateBlogAction, deleteBlogAction } from './reducers/reducers';
+import { useDispatch, useSelector } from 'react-redux';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [user, setUser] = useState(null);
 
   const blogFormRef = useRef();
   const dispatch = useDispatch();
+  const blogs = useSelector(state => state.blogs);
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs(blogs.sort((a, b) => {
-        return b.likes - a.likes;
-      }))
-    );
+    blogService.getAll()
+      .then(blogs => {
+        const orderedBlogs = blogs.sort((a, b) => b.likes - a.likes);
+        dispatch(initializeBlogs(orderedBlogs));
+      });
   }, []);
 
   useEffect(() => {
@@ -57,19 +57,16 @@ const App = () => {
   const addBlog = async (newBlog) => {
     try {
       const savedBlog = await blogService.create(newBlog);
-      setBlogs(blogs.concat(savedBlog));
-
       blogFormRef.current.toggleVisibility();
 
+      dispatch(addBlogAction(savedBlog));
       dispatch(setInfoAction(`Blog "${savedBlog.title}" saved successfully`, 'success'));
 
       setTimeout(() => {
-
         dispatch(resetInfoAction());
       }, 5000);
     } catch (exception) {
       dispatch(setInfoAction('Error saving new blog', 'error'));
-
       setTimeout(() => {
         dispatch(resetInfoAction());
       }, 5000);
@@ -116,8 +113,7 @@ const App = () => {
   const updateBlog = async (newBlog) => {
     try {
       const updatedBlog = await blogService.update(newBlog);
-
-      setBlogs(blogs.map(blog => blog.id !== newBlog.id ? blog : updatedBlog));
+      dispatch(updateBlogAction(updatedBlog));
 
     } catch (exception) {
       dispatch(setInfoAction('Error updating blog.', 'error'));
@@ -135,8 +131,8 @@ const App = () => {
 
     try {
       await blogService.deleteBlog(blogToDelete.id);
-      setBlogs(blogs.filter(blog => blog.id !== blogToDelete.id));
       dispatch(setInfoAction('Blog deleted', 'success'));
+      dispatch(deleteBlogAction(blogToDelete.id));
 
       setTimeout(() => {
         dispatch(resetInfoAction());
