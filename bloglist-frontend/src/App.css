@@ -1,5 +1,10 @@
 .logged-in-user {
-  display: inline-block;
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+}
+
+.logout-btn {
+  margin-left: 10px;
 }
 
 .info {
@@ -37,11 +42,22 @@
 }
 
 .nav {
-  display: flex;
-  align-items: center;
   background-color: lightgray;
+  align-items: baseline;
 }
 
 .nav-link {
   margin: 5px;
+}
+
+#login {
+  margin-top: 0.5rem;
+}
+
+h3 {
+  margin-top: 2rem;
+}
+
+.comment-section {
+  margin-top: 1rem;
 }

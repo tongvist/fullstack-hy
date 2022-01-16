@@ -13,8 +13,10 @@ const Navbar = ({ handleLogout }) => {
       <Link to='/users'>
         <p className='nav-link'>Users</p>
       </Link>
-      <p className='logged-in-user'>{user.name} logged in</p>
-      <button onClick={ handleLogout }>logout</button>
+      <div className='logged-in-user'>
+        {user.name}
+        <button className='logout-btn' onClick={ handleLogout }>Log Out</button>
+      </div>
     </div>
   );
 };

@@ -1,14 +1,18 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import Alert from 'react-bootstrap/Alert';
 
 const Info = () => {
   const store = useSelector(state => state.info);
-  const classString = `info ${store.infoType}`;
+
+  if (!store.text) {
+    return null;
+  }
 
   return (
-    <div className={classString}>
+    <Alert variant={ store.infoType }>
       {store.text}
-    </div>
+    </Alert>
   );
 };
 

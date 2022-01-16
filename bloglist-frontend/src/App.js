@@ -12,6 +12,9 @@ import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Users from './components/Users';
 import User from './components/User';
 import Navbar from './components/Navbar';
+import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -51,7 +54,7 @@ const App = () => {
       setPassword('');
 
     } catch (exception) {
-      dispatch(setInfoAction('Wrong username or password.', 'error'));
+      dispatch(setInfoAction('Wrong username or password.', 'danger'));
       setTimeout(() => {
         dispatch(resetInfoAction());
       }, 5000);
@@ -70,7 +73,7 @@ const App = () => {
         dispatch(resetInfoAction());
       }, 5000);
     } catch (exception) {
-      dispatch(setInfoAction('Error saving new blog', 'error'));
+      dispatch(setInfoAction('Error saving new blog', 'danger'));
       setTimeout(() => {
         dispatch(resetInfoAction());
       }, 5000);
@@ -78,29 +81,29 @@ const App = () => {
   };
 
   const loginForm = () => (
-    <form onSubmit={handleLogin}>
-      <div>
-        username
-        <input
+    <Form className='login-form' onSubmit={handleLogin}>
+      <Form.Group>
+        <Form.Label>Username</Form.Label>
+        <Form.Control
           id='username'
           type='text'
           value={username}
           name='Username'
-          onChange={({ target }) => setUsername(target.value)}>
-        </input>
-      </div>
-      <div>
-        password
-        <input
+          onChange={({ target }) => setUsername(target.value)}
+        />
+      </Form.Group>
+      <Form.Group>
+        <Form.Label>Password</Form.Label>
+        <Form.Control
           id='password'
           type='password'
           value={password}
           name='Password'
-          onChange={({ target }) => setPassword(target.value)}>
-        </input>
-      </div>
-      <button id='login' type='submit'>Login</button>
-    </form>
+          onChange={({ target }) => setPassword(target.value)}
+        />
+      </Form.Group>
+      <Button variant='primary' id='login' type='submit'>Login</Button>
+    </Form>
   );
 
   const handleLogout = () => {
@@ -120,7 +123,7 @@ const App = () => {
       dispatch(updateBlogAction(updatedBlog));
 
     } catch (exception) {
-      dispatch(setInfoAction('Error updating blog.', 'error'));
+      dispatch(setInfoAction('Error updating blog.', 'danger'));
       setTimeout(() => {
         dispatch(resetInfoAction());
       }, 5000);
@@ -143,7 +146,7 @@ const App = () => {
       }, 5000);
 
     } catch (exception) {
-      dispatch(setInfoAction('Error deleting blog.', 'error'));
+      dispatch(setInfoAction('Error deleting blog.', 'danger'));
 
       setTimeout(() => {
         dispatch(resetInfoAction());
@@ -152,50 +155,60 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <div>
-        <h1>Blogs</h1>
-        {user === null ?
-          <div>
-            <Info />
-            { loginForm() }
-          </div>
-          :
-          <div>
-            <Info />
+    <div className='container'>
+      <Router>
+        <div>
+          <h1>Blogs</h1>
+          {user === null ?
+            <div>
+              <Info />
+              { loginForm() }
+            </div>
+            :
+            <div>
+              <Info />
 
-            <Navbar handleLogout={ handleLogout }/>
+              <Navbar handleLogout={ handleLogout }/>
 
-            <br />
+              <br />
 
-            <Switch>
-              <Route path='/users/:id'>
-                <User />
-              </Route>
-              <Route path='/users'>
-                <Users />
-              </Route>
-              <Route path='/blogs/:id'>
-                <Blog handleUpdate={ updateBlog } handleDelete={ deleteBlog }/>
-              </Route>
-              <Route path='/'>
-                { blogForm() }
-                <div className='blog-list'>
-                  {blogs.map(blog => {
-                    return (
-                      <div key={blog.id} className='blog'>
-                        <Link to={`/blogs/${blog.id}`}>
-                          <p className='inline-p'>&quot;{ blog.title }&quot; by { blog.author }</p>
-                        </Link>
-                      </div>);
-                  })}
-                </div>
-              </Route>
-            </Switch>
-          </div>
-        }
-      </div>
-    </Router>
+              <Switch>
+                <Route path='/users/:id'>
+                  <User />
+                </Route>
+                <Route path='/users'>
+                  <Users />
+                </Route>
+                <Route path='/blogs/:id'>
+                  <Blog handleUpdate={ updateBlog } handleDelete={ deleteBlog }/>
+                </Route>
+                <Route path='/'>
+                  { blogForm() }
+                  <br/>
+                  <Table hover>
+                    <tbody>
+                      {blogs.map(blog => {
+                        return (
+                          <tr key={blog.id} className='blog'>
+                            <td>
+                              <Link to={`/blogs/${blog.id}`}>
+                                <p className='inline-p'>{ blog.title }</p>
+                              </Link>
+                            </td>
+                            <td>
+                              { blog.author }
+                            </td>
+                          </tr>);
+                      })}
+                    </tbody>
+                  </Table>
+                </Route>
+              </Switch>
+            </div>
+          }
+        </div>
+      </Router>
+    </div>
   );
 };
 

@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { updateCommentsAction } from '../reducers/reducers';
 import blogService from '../services/blogs';
+import Table from 'react-bootstrap/Table';
+import Card from 'react-bootstrap/Card';
 
 const Blog = ({ handleUpdate, handleDelete }) => {
   const id = useParams().id;
@@ -48,34 +50,73 @@ const Blog = ({ handleUpdate, handleDelete }) => {
 
   return (
     <div className='blog'>
-      <h2 className='inline-p'>{ blog.title } by {blog.author}</h2>
+      <h2 className='inline-p'>{ blog.title }</h2>
 
-      <p><a href={blog.url}>{ blog.url }</a></p>
+      <Table hover size='sm'>
+        <tbody>
+          <tr>
+            <td>
+              Author
+            </td>
+            <td>
+              { blog.author }
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Url
+            </td>
+            <td>
+              <a href={blog.url}>{ blog.url }</a>
+            </td>
+          </tr>
 
-      <p className='inline-p'>Likes: { blog.likes }</p>
-      <button onClick={ handleLike }>Like</button>
+          <tr>
+            <td>
+              Likes
+            </td>
+            <td>
+              { blog.likes }
+            </td>
+          </tr>
 
-      <p>Added by: { blog.user.name }</p>
+          <tr>
+            <td>
+              Added by
+            </td>
+            <td>
+              { blog.user.name }
+            </td>
+          </tr>
+
+        </tbody>
+      </Table>
+
       { blog.user.name === user.name
         ? <Link to='/'>
           <button className='delete-blog-btn' onClick={deleteBlog}>delete</button>
         </Link>
         : null
       }
+      <button onClick={ handleLike }>Like</button>
+
       <h3>Comments</h3>
       <div>
         <input id='new-comment' type='text' onChange={ handleCommentInput }></input>
         <button onClick={ addComment }>Add Comment</button>
       </div>
-      <ul>
+      <div className='comment-section'>
         {blog.comments.map(comment => {
           return (
-            <li key={ comment._id }>
-              <p>{ comment.content } ({ new Date(comment.date).toLocaleString() })</p>
-            </li>
+            <Card bg='light' key={ comment._id }>
+              <Card.Body>
+                <p>{ comment.content }</p>
+                <p className='comment-time'>{ new Date(comment.date).toLocaleString() }</p>
+              </Card.Body>
+            </Card>
           );
         })}
-      </ul>
+      </div>
     </div>
   );
 };
