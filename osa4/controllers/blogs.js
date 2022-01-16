@@ -25,6 +25,7 @@ blogRouter.get('/:id/comments', async (request, response, next) => {
     if (!blog) {
       return response.status(404).end();
     }
+
     return response.status(200).json(blog.comments);
   } catch (error) {
     next(error);
@@ -32,14 +33,17 @@ blogRouter.get('/:id/comments', async (request, response, next) => {
 });
 
 blogRouter.post('/:id/comments', async (request, response, next) => {
-  const comment = request.body.comment;
+  const content = request.body.comment;
   const id = request.params.id;
+  const date = new Date();
+
   try {
     let blog = await Blog.findById(id);
     if (!blog) {
       return response.status(404).end();
     }
-    blog.comments = blog.comments.concat(comment);
+
+    blog.comments = blog.comments.concat({ content, date });
     const updatedBlog = await blog.save();
     return response.status(200).json(updatedBlog);
   } catch (error) {

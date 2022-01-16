@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { updateCommentsAction } from '../reducers/reducers';
@@ -9,6 +9,7 @@ const Blog = ({ handleUpdate, handleDelete }) => {
   const blog = useSelector(state => state.blogs.find(b => b.id === id));
   const user = useSelector(state => state.user);
   const dispatch = useDispatch();
+  const [comment, setComment] = useState('');
 
   const handleLike = () => {
     const updatedBlog = { ...blog, likes: blog.likes + 1, user: blog.user.id };
@@ -17,6 +18,24 @@ const Blog = ({ handleUpdate, handleDelete }) => {
 
   const deleteBlog = () => {
     handleDelete(blog);
+  };
+
+  const handleCommentInput = ({ target }) => {
+    setComment(target.value);
+  };
+
+  const resetCommentInput = () => {
+    document.getElementById('new-comment').value = '';
+    setComment('');
+  };
+
+  const addComment = () => {
+    blogService.addComment(id, comment)
+      .then(({ comments }) => {
+        dispatch(updateCommentsAction({ id, comments }));
+        resetCommentInput();
+      })
+      .catch(e => console.log(e));
   };
 
   useEffect(() => {
@@ -44,11 +63,15 @@ const Blog = ({ handleUpdate, handleDelete }) => {
         : null
       }
       <h3>Comments</h3>
+      <div>
+        <input id='new-comment' type='text' onChange={ handleCommentInput }></input>
+        <button onClick={ addComment }>Add Comment</button>
+      </div>
       <ul>
         {blog.comments.map(comment => {
           return (
-            <li key={ comment }>
-              { comment }
+            <li key={ comment._id }>
+              <p>{ comment.content } ({ new Date(comment.date).toLocaleString() })</p>
             </li>
           );
         })}

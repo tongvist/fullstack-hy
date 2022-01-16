@@ -48,6 +48,13 @@ const getComments = async id => {
   return response.data;
 };
 
-const blogService = { getAll, setToken, create, update, deleteBlog, getComments };
+const addComment = async (id, comment) => {
+  const endpoint = `${baseUrl}/${id}/comments`;
+
+  const response = await axios.post(endpoint, { comment });
+  return response.data;
+};
+
+const blogService = { getAll, setToken, create, update, deleteBlog, getComments, addComment };
 
 export default blogService;

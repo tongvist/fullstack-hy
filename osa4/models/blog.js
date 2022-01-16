@@ -11,7 +11,8 @@ const blogSchema = mongoose.Schema({
   },
   comments: [
     {
-      type: String
+      content: String,
+      date: Date
     }
   ]
 });
