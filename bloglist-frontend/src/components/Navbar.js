@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import Button from 'react-bootstrap/Button';
 
 const Navbar = ({ handleLogout }) => {
   const user = useSelector(state => state.user);
@@ -15,7 +16,7 @@ const Navbar = ({ handleLogout }) => {
       </Link>
       <div className='logged-in-user'>
         {user.name}
-        <button className='logout-btn' onClick={ handleLogout }>Log Out</button>
+        <Button variant='light' className='logout-btn' onClick={ handleLogout }>Log Out</Button>
       </div>
     </div>
   );

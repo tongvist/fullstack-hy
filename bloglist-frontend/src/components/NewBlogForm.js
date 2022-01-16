@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import Table from 'react-bootstrap/Table';
+import Form from 'react-bootstrap/Form';
+import Button from 'react-bootstrap/Button';
 
 const NewBlogForm = ({ handleSubmit }) => {
   const [title, setTitle] = useState('');
@@ -21,53 +22,43 @@ const NewBlogForm = ({ handleSubmit }) => {
   return (
     <div>
       <h2>Create new</h2>
-      <form onSubmit={saveBlog}>
-        <Table hover>
-          <tbody>
-            <tr>
-              <td>
-                <label>Title</label>
-              </td>
-              <td>
-                <input
-                  id='new-blog-title'
-                  type='text'
-                  value={title}
-                  onChange={({ target }) => setTitle(target.value)}>
-                </input>
-              </td>
-            </tr>
+      <Form className='new-blog-form' onSubmit={ saveBlog }>
+        <Form.Group>
+          <Form.Label>
+            Title
+          </Form.Label>
+          <Form.Control
+            id='new-blog-title'
+            type='text'
+            value={title}
+            onChange={({ target }) => setTitle(target.value)}>
+          </Form.Control>
+        </Form.Group>
 
-            <tr>
-              <td>
-                <label>Author</label>
-              </td>
-              <td>
-                <input
-                  id='new-blog-author'
-                  type='text'
-                  value={author}
-                  onChange={({ target }) => setAuthor(target.value)}>
-                </input>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <label>Url</label>
-              </td>
-              <td>
-                <input
-                  id='new-blog-url'
-                  type='text'
-                  value={url}
-                  onChange={({ target }) => setUrl(target.value)}>
-                </input>
-              </td>
-            </tr>
-          </tbody>
-        </Table>
-        <button type='submit'>Save</button>
-      </form>
+        <Form.Group>
+          <Form.Label>
+            Author
+          </Form.Label>
+          <Form.Control
+            id='new-blog-author'
+            type='text'
+            value={author}
+            onChange={({ target }) => setAuthor(target.value)}>
+          </Form.Control>
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>
+            Url
+          </Form.Label>
+          <Form.Control
+            id='new-blog-url'
+            type='text'
+            value={url}
+            onChange={({ target }) => setUrl(target.value)}>
+          </Form.Control>
+        </Form.Group>
+        <Button id='new-form-submit' variant='primary' type='submit'>Save</Button>
+      </Form>
     </div>
   );};
 

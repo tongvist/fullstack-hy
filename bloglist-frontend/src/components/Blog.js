@@ -5,6 +5,8 @@ import { updateCommentsAction } from '../reducers/reducers';
 import blogService from '../services/blogs';
 import Table from 'react-bootstrap/Table';
 import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
 const Blog = ({ handleUpdate, handleDelete }) => {
   const id = useParams().id;
@@ -94,17 +96,19 @@ const Blog = ({ handleUpdate, handleDelete }) => {
 
       { blog.user.name === user.name
         ? <Link to='/'>
-          <button className='delete-blog-btn' onClick={deleteBlog}>delete</button>
+          <Button variant='danger' className='delete-blog-btn' onClick={deleteBlog}>delete</Button>
         </Link>
         : null
       }
-      <button onClick={ handleLike }>Like</button>
+      <Button variant='primary' onClick={ handleLike }>Like</Button>
 
       <h3>Comments</h3>
+
       <div>
-        <input id='new-comment' type='text' onChange={ handleCommentInput }></input>
-        <button onClick={ addComment }>Add Comment</button>
+        <Form.Control id='new-comment' type='text' onChange={ handleCommentInput }></Form.Control>
+        <Button variant='primary' onClick={ addComment }>Add Comment</Button>
       </div>
+
       <div className='comment-section'>
         {blog.comments.map(comment => {
           return (
