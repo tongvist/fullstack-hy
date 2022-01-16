@@ -18,6 +18,35 @@ blogRouter.get('/', async (request, response) => {
   }
 });
 
+blogRouter.get('/:id/comments', async (request, response, next) => {
+  const id = request.params.id;
+  try {
+    const blog = await Blog.findById(id);
+    if (!blog) {
+      return response.status(404).end();
+    }
+    return response.status(200).json(blog.comments);
+  } catch (error) {
+    next(error);
+  }
+});
+
+blogRouter.post('/:id/comments', async (request, response, next) => {
+  const comment = request.body.comment;
+  const id = request.params.id;
+  try {
+    let blog = await Blog.findById(id);
+    if (!blog) {
+      return response.status(404).end();
+    }
+    blog.comments = blog.comments.concat(comment);
+    const updatedBlog = await blog.save();
+    return response.status(200).json(updatedBlog);
+  } catch (error) {
+    next(error);
+  }
+});
+
 blogRouter.post('/', userExtractor, async (request, response, next) => {
   let data = request.body;
 

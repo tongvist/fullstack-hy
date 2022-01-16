@@ -47,6 +47,13 @@ export const deleteBlogAction = (id) => {
   };
 };
 
+export const updateCommentsAction = (data) => {
+  return {
+    type: 'UPDATE_COMMENTS',
+    data
+  };
+};
+
 export const setUserAction = (data) => {
   return {
     type: 'SET_USER',
@@ -75,6 +82,8 @@ const blogReducer = (state = initialStateBlogs, action) => {
     return state.map(blog => blog.id !== action.data.id ? blog : action.data);
   case 'DELETE_BLOG':
     return state.filter(blog => blog.id !== action.id);
+  case 'UPDATE_COMMENTS':
+    return state.map(blog => blog.id !== action.data.id ? blog : { ...blog, comments: action.data.comments });
   default:
     return state;
   }
