@@ -1,6 +1,6 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 const Blog = ({ handleUpdate, handleDelete }) => {
   const id = useParams().id;
@@ -26,7 +26,12 @@ const Blog = ({ handleUpdate, handleDelete }) => {
       <button onClick={ handleLike }>Like</button>
 
       <p>Added by: { blog.user.name }</p>
-      <p>{ blog.user.name === user ? <button className='delete-blog-btn' onClick={deleteBlog}>delete</button> : null }</p>
+      <p>{ blog.user.name === user.name
+        ? <Link to='/'>
+          <button className='delete-blog-btn' onClick={deleteBlog}>delete</button>
+        </Link>
+        : null }
+      </p>
     </div>
   );
 };

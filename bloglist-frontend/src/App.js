@@ -11,6 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import Users from './components/Users';
 import User from './components/User';
+import Navbar from './components/Navbar';
 
 const App = () => {
   const [username, setUsername] = useState('');
@@ -161,12 +162,9 @@ const App = () => {
           </div>
           :
           <div>
-            <div>
-              <Info />
-            </div>
-            <p className='logged-in-user'>{user.name} logged in</p>
-            <button onClick={handleLogout}>logout</button>
+            <Info />
 
+            <Navbar handleLogout={ handleLogout }/>
 
             <br />
 

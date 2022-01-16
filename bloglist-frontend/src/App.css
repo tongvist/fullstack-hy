@@ -35,3 +35,13 @@
 .delete-blog-btn {
   background-color: red;
 }
+
+.nav {
+  display: flex;
+  align-items: center;
+  background-color: lightgray;
+}
+
+.nav-link {
+  margin: 5px;
+}
