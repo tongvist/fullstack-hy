@@ -1,8 +1,8 @@
-import { useMutation } from '@apollo/client';
+import { useLazyQuery, useMutation, } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
-import { LOGIN } from '../queries';
+import { LOGIN, ME } from '../queries';
 
-const Login = ({ show, setToken }) => {
+const Login = ({ show, setToken, setUser }) => {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -11,21 +11,26 @@ const Login = ({ show, setToken }) => {
     onError: (error) => {
       console.log(error);
     }
-  })
+  });
 
+  const [getUser] = useLazyQuery(ME);
+  
   useEffect(() => {
     if (result.data) {
       const token = result.data.login.value;
       setToken(token);
       localStorage.setItem('user-token', token);
-      console.log('token', token)
     }
   }, [result.data]) // eslint-disable-line
-
+  
   const submit = async (event) => {
     event.preventDefault();
+    
+    login({variables: { username, password }});
+    const user = await getUser();
 
-    login({variables: { username, password }})
+    setUser(user.data.me);
+
     event.target.reset();
     setUsername('');
     setPassword('');
