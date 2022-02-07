@@ -1,9 +1,31 @@
 import { useQuery } from '@apollo/client'
-import React from 'react'
+import React, { useState } from 'react'
 import { ALL_BOOKS } from '../queries'
 
 const Books = (props) => {
   const books = useQuery(ALL_BOOKS)
+  const [filter, setFilter] = useState(null)
+
+  const genres = () => {
+    let result = []
+
+    for (let book of books.data.allBooks) {
+      for (let genre of book.genres) {
+        if (!result.includes(genre)) {
+          result.push(genre)
+        }
+      }
+    }
+
+    return (
+      <div>
+        <button onClick={ () => setFilter('') }>All</button>
+
+        {result.map(genre => 
+          <button key={ genre } onClick={() => setFilter(genre)}>{ genre }</button>)}
+      </div>
+    );
+  }
   
   if (!props.show) {
     return null
@@ -17,6 +39,9 @@ const Books = (props) => {
     <div>
       <h2>books</h2>
 
+      <p>Genre:</p>
+      { genres() }
+
       <table>
         <tbody>
           <tr>
@@ -29,11 +54,13 @@ const Books = (props) => {
             </th>
           </tr>
           {books.data.allBooks.map(a =>
-            <tr key={a.title}>
-              <td>{a.title}</td>
-              <td>{a.author.name}</td>
-              <td>{a.published}</td>
-            </tr>
+            filter === '' || a.genres.includes(filter)
+            ? <tr key={a.title}>
+                <td>{a.title}</td>
+                <td>{a.author.name}</td>
+                <td>{a.published}</td>
+              </tr>
+            : null
           )}
         </tbody>
       </table>
