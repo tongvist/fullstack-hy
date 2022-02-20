@@ -29,8 +29,8 @@ const resolvers = {
       return books;
     },
     allAuthors: async () => {
-      const authors = await Author.find({})
-      return authors
+      const authors = await Author.find({}).populate('books');
+      return authors;
     },
     me: (root, args, context) => {
       return context.currentUser;
@@ -39,8 +39,7 @@ const resolvers = {
 
   Author: {
     bookCount: async (root) => {
-      const books = await Book.find({ author: { $in: root._id } });
-      return books.length;
+      return root.books.length;
     }
   },
 
@@ -74,6 +73,13 @@ const resolvers = {
         throw new UserInputError(error.message, {
           invalidArgs: 'title'
         })
+      }
+
+      try {
+        knownAuthor.books = knownAuthor.books.concat(book._id);
+        await knownAuthor.save();
+      } catch (error) {
+        console.log(error);
       }
 
       pubsub.publish('BOOK_ADDED', { bookAdded: book });

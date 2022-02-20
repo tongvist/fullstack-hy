@@ -10,7 +10,10 @@ const schema = new mongoose.Schema({
   },
   born: {
     type: Number
-  }
+  },
+  books: [
+    { type: mongoose.Schema.Types.ObjectId }
+  ]
 });
 
 schema.plugin(uniqueValidator);
