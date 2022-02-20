@@ -35,7 +35,6 @@ const App = () => {
             ? <button onClick={() => setPage('login')}>login</button>
             : <>
                 <button onClick={ logout }>logout</button>
-                { user.username }
               </>
         }
       </div>
