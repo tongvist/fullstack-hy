@@ -5,17 +5,42 @@ import NewBook from './components/NewBook'
 import Login from './components/Login'
 import { useApolloClient, useSubscription } from '@apollo/client'
 import ForYou from './components/ForYou'
-import { BOOK_ADDED } from './queries'
+import { ALL_BOOKS, BOOK_ADDED } from './queries'
+
+const updateCache = (cache, query, addedBook) => {
+  const uniqueByName = (a) => {
+    let seen = new Set();
+
+    return a.filter(item => {
+      let k = item.title;
+      return seen.has(k) ? false : seen.add(k);
+    });
+  }
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqueByName(allBooks.concat(addedBook))
+    }
+  })
+}
 
 const App = () => {
   const [page, setPage] = useState('authors');
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
+  const [notification, setNotification] = useState('');
   const client = useApolloClient();
 
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
-      window.alert(`Book added: ${subscriptionData.data.bookAdded.title}`);
+      const addedBook = subscriptionData.data.bookAdded;
+
+      setNotification(`New book added: "${subscriptionData.data.bookAdded.title}" by ${subscriptionData.data.bookAdded.author.name}`);
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook);
+
+      setTimeout(() => {
+        setNotification('');
+      }, 5000);
     }
   })
 
@@ -45,6 +70,8 @@ const App = () => {
               </>
         }
       </div>
+
+      <div>{ notification }</div>
 
       <Authors
         show={page === 'authors'}
