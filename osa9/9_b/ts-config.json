@@ -1,6 +1,15 @@
 {
   "compilerOptions": {
     "noImplicitAny": true,
-    "types": ["node"]
+    "types": ["node"],
+    "noImplicitReturns": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictBindCallApply": true,
+    "noUnusedLocals": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "esModuleInterlop": true,
+    "declaration": true
   }
 }
