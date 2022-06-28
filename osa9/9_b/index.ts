@@ -12,11 +12,11 @@ app.get('/bmi', (req, res) => {
 
   if (!height || !weight) {
     return res.status(400).json({error: 'Missing height or weight information'});
-  };
+  }
 
   if (isNaN(Number(height)) || isNaN(Number(weight))) {
     return res.status(400).json({error: 'Height and weight should be numbers'});
-  };
+  }
 
   const bmi = calculateBmi(Number(height), Number(weight));
 
@@ -24,7 +24,7 @@ app.get('/bmi', (req, res) => {
     weight,
     height,
     bmi
-  }
+  };
 
   return res.json(result);
 });

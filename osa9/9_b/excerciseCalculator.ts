@@ -17,13 +17,13 @@ const calculateExcercises = (hours: Array<number>, target: number): Result => {
   const periodLength = hours.length;
   let trainingDays = 0;
 
-  for (let day of hours) {
+  for (const day of hours) {
     if (day > 0) {
       trainingDays += 1;
     }
   }
 
-  let average = hours.reduce((previous, current) => previous + current, 0) / hours.length;
+  const average = hours.reduce((previous, current) => previous + current, 0) / hours.length;
 
   const success = average >= target;
 
@@ -49,7 +49,7 @@ const calculateExcercises = (hours: Array<number>, target: number): Result => {
     target,
     average
   };
-}
+};
 
 const parseArguments = (args: Array<string>): Values => {
   if (args.length < 3) {
@@ -60,20 +60,20 @@ const parseArguments = (args: Array<string>): Values => {
     throw new Error('Excercise hours missing!');
   }
 
-  for (let i of args.slice(2)) {
+  for (const i of args.slice(2)) {
     if (isNaN(Number(i))) {
-      throw new Error('All values must be numbers!')
+      throw new Error('All values must be numbers!');
     }
   }
   
-  let hours = args.slice(3)
+  const hours = args.slice(3)
     .map((i: string) => Number(i));
 
   return {
     target: Number(args[2]),
     hours
-  }
-}
+  };
+};
 
 try {
   // console.log('args: ', process.argv[0], process.argv[1], process.argv[2])

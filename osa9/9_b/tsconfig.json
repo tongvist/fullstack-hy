@@ -9,7 +9,7 @@
     "noUnusedLocals": true,
     "noImplicitThis": true,
     "alwaysStrict": true,
-    "esModuleInterlop": true,
+    "esModuleInterop": true,
     "declaration": true
   }
 }
