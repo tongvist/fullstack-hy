@@ -13,7 +13,7 @@ interface Values {
   hours: Array<number>
 }
 
-const calculateExcercises = (hours: Array<number>, target: number): Result => {
+export const calculateExcercises = (hours: Array<number>, target: number): Result => {
   const periodLength = hours.length;
   let trainingDays = 0;
 
